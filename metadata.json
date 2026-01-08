@@ -1,0 +1,7 @@
+{
+  "name": "Elite Inventory",
+  "description": "Instant. Premium. Yours. A world-class marketplace for elite digital assets and professional license keys.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
