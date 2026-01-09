@@ -36,24 +36,18 @@ const ScrollToTop = () => {
   return null;
 };
 
-const AuthErrorHandler = () => {
+const AuthHandler = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToast } = useApp();
+  const { isAuth, isLoading, user } = useApp();
 
   useEffect(() => {
-    const hash = location.hash;
-    if (hash && hash.includes('error=')) {
-      const params = new URLSearchParams(hash.replace('#', '?'));
-      const errorMsg = params.get('error_description') || 'Authentication failed';
-      const errorCode = params.get('error_code');
-
-      if (errorCode === 'otp_expired' || errorMsg.includes('invalid') || errorMsg.includes('expired')) {
-        addToast('Verification link expired. Please request a new one.', 'error');
-        navigate('/login?error=expired', { replace: true });
-      }
+    // If we land on the root with a token in the hash, Supabase processes it.
+    // Once isLoading is false and we are auth'd, move to dashboard.
+    if (!isLoading && isAuth && location.pathname === '/' && location.hash.includes('access_token')) {
+      navigate('/dashboard', { replace: true });
     }
-  }, [location, navigate, addToast]);
+  }, [isAuth, isLoading, location, navigate]);
 
   return null;
 };
@@ -124,7 +118,6 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
   const { isAuth, user, isLoading } = useApp();
   const location = useLocation();
   
-  // If we are still initializing the session, show loader
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -134,12 +127,10 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
     );
   }
 
-  // Once loading is finished, if not auth, redirect
   if (!isAuth) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If auth is true but user data hasn't arrived (edge case), show mini-loader
   if (!user) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -160,7 +151,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 transition-colors duration-500">
       <ScrollToTop />
-      <AuthErrorHandler />
+      <AuthHandler />
       <Navbar />
       <main className="flex-grow">
         <Routes>

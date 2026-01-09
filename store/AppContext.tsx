@@ -69,15 +69,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // Core function to sync user profile and orders
-  const syncUserSession = async (userId: string | null) => {
-    if (!userId) {
-      setUser(null);
-      setIsAuth(false);
-      setOrders([]);
-      return;
-    }
-
+  const fetchProfileAndOrders = async (userId: string) => {
     try {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -85,40 +77,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         .eq('id', userId)
         .single();
       
-      if (profileError) {
-        console.error('Session sync error:', profileError);
-        // If profile doesn't exist yet, we might need to wait for the trigger or retry
-        return;
-      }
+      if (profileError) throw profileError;
 
-      setIsAuth(true);
-      setUser(profile);
-
-      // Fetch orders for this user
       const isAdmin = profile.role === 'admin';
       const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
-      if (!isAdmin) {
-        orderQuery.eq('userId', userId);
-      }
+      if (!isAdmin) orderQuery.eq('userId', userId);
       
       const { data: orderData } = await orderQuery;
+
+      setUser(profile);
+      setIsAuth(true);
       setOrders(orderData || []);
     } catch (err) {
-      console.error('Critical sync error:', err);
+      console.error('Data sync error:', err);
+      // If profile fails, we don't treat them as auth'd because we need the role
+      setIsAuth(false);
+      setUser(null);
     }
   };
 
   useEffect(() => {
-    const initApp = async () => {
+    const init = async () => {
       setIsLoading(true);
       try {
-        // 1. Initial Session Check
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          await syncUserSession(session.user.id);
-        }
-
-        // 2. Load Global Data
+        // Load global data first
         const [prodRes, settRes] = await Promise.all([
           supabase.from('products').select('*'),
           supabase.from('settings').select('*').eq('key', 'global').single()
@@ -126,23 +108,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         if (prodRes.data && prodRes.data.length > 0) setProducts(prodRes.data);
         else setProducts(INITIAL_PRODUCTS);
-
         if (settRes.data?.value) setSettings(settRes.data.value);
+
+        // Check for session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await fetchProfileAndOrders(session.user.id);
+        } else {
+          setIsAuth(false);
+          setUser(null);
+        }
       } catch (e) {
-        console.error('Init error:', e);
         setProducts(INITIAL_PRODUCTS);
       } finally {
         setIsLoading(false);
       }
     };
 
-    initApp();
+    init();
 
-    // 3. Auth Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         if (session?.user) {
-          await syncUserSession(session.user.id);
+          await fetchProfileAndOrders(session.user.id);
         }
       } else if (event === 'SIGNED_OUT') {
         setIsAuth(false);
@@ -223,25 +211,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return true;
   };
 
-  const signup = async (email: string, pass: string, name: string): Promise<boolean> => {
+  const signup = async (email: string, pass: string, name: string) => {
     const { data, error } = await supabase.auth.signUp({ 
       email, 
       password: pass,
       options: { 
         data: { full_name: name }, 
-        emailRedirectTo: window.location.origin + '/dashboard' 
+        emailRedirectTo: window.location.origin + '/' // Land on home to avoid 404s
       }
     });
     
     if (error) {
-      if (error.message.toLowerCase().includes('already registered') || error.status === 400) {
-        addToast('Email already registered. Switching to login...', 'info');
-        setTimeout(() => {
-          window.location.href = `/login?registered=true`;
-        }, 1500);
-      } else {
-        addToast(error.message, 'error');
-      }
+      addToast(error.message, 'error');
       return false;
     }
     if (data.user) {
@@ -267,18 +248,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
+    // 1. Clear state immediately for UI responsiveness
+    setIsAuth(false);
+    setUser(null);
+    setOrders([]);
+    
     try {
+      // 2. Call Supabase
       await supabase.auth.signOut();
-      // Force clear local state immediately
-      setIsAuth(false);
-      setUser(null);
-      setOrders([]);
       addToast('Signed out successfully.');
     } catch (e) {
       console.error('Logout error:', e);
-      // Even if API fails, clear local state
-      setIsAuth(false);
-      setUser(null);
     }
   };
 
