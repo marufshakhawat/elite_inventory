@@ -34,7 +34,7 @@ const Home: React.FC = () => {
             
             <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight">
               Elevated <span className="text-slate-500 font-semibold">Digital</span> <br /> 
-              Infrastructure.
+              subscriptions.
             </h1>
             
             <div className="text-base md:text-lg text-slate-400 max-w-lg font-light leading-relaxed">
