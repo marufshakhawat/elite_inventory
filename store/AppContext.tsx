@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, CartItem, User, Order, AppSettings } from '../types';
-import { INITIAL_PRODUCTS, DUMMY_USER, DEMO_ACCOUNTS } from '../utils/mockData';
+import { INITIAL_PRODUCTS } from '../utils/mockData';
+import { supabase } from '../utils/supabase';
 
 interface Toast {
   id: number;
@@ -16,25 +17,29 @@ interface AppContextType {
   user: User | null;
   orders: Order[];
   isAuth: boolean;
+  isLoading: boolean;
   toasts: Toast[];
   settings: AppSettings;
   isChatOpen: boolean;
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateCartQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, variants?: Partial<CartItem>) => void;
+  removeFromCart: (cartItemId: string) => void;
+  updateCartQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
   toggleWishlist: (productId: string) => void;
-  login: (emailOrUsername: string, pass: string) => boolean;
-  logout: () => void;
-  updateUser: (userData: Partial<User>) => void;
-  addOrder: (order: Order) => void;
-  deleteOrder: (id: string) => void;
-  updateProduct: (product: Product) => void;
-  deleteProduct: (id: string) => void;
-  addProduct: (product: Product) => void;
-  updateOrderStatus: (orderId: string, status: Order['status']) => void;
-  fulfillOrder: (orderId: string, data: string) => void;
-  updateSettings: (newSettings: Partial<AppSettings>) => void;
+  login: (email: string, pass: string) => Promise<boolean>;
+  signup: (email: string, pass: string, name: string) => Promise<boolean>;
+  signInWithGoogle: () => Promise<void>;
+  updatePassword: (newPass: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateUser: (userData: Partial<User>) => Promise<void>;
+  addOrder: (order: Order) => Promise<void>;
+  deleteOrder: (id: string) => Promise<void>;
+  updateProduct: (product: Product) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  addProduct: (product: Product) => Promise<void>;
+  updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
+  fulfillOrder: (orderId: string, data: string) => Promise<void>;
+  updateSettings: (newSettings: Partial<AppSettings>) => Promise<void>;
   addToast: (message: string, type?: 'success' | 'info' | 'error') => void;
   removeToast: (id: number) => void;
   setChatOpen: (open: boolean) => void;
@@ -50,53 +55,115 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
-  
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
   });
-
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('orders');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [settings, setSettings] = useState<AppSettings>(() => {
-    const saved = localStorage.getItem('settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
-  });
-  const [isAuth, setIsAuth] = useState(() => !!localStorage.getItem('user'));
+  const [user, setUser] = useState<User | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+  const [isAuth, setIsAuth] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(products));
-  }, [products]);
+    const initialize = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+          setIsAuth(true);
+        }
+
+        const { data: productsData, error: productsError } = await supabase
+          .from('products')
+          .select('*');
+        
+        if (productsError) {
+          console.error('Database Error (Products):', productsError.message);
+          setProducts(INITIAL_PRODUCTS);
+        } else if (productsData && productsData.length > 0) {
+          setProducts(productsData);
+        } else {
+          setProducts(INITIAL_PRODUCTS);
+        }
+
+        const { data: settingsData } = await supabase
+          .from('settings')
+          .select('*')
+          .eq('key', 'global')
+          .single();
+        
+        if (settingsData?.value) {
+          setSettings(settingsData.value);
+        }
+
+      } catch (err: any) {
+        console.error('Initialization caught error:', err.message || 'Unknown network error');
+        setProducts(INITIAL_PRODUCTS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initialize();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+        await fetchUserProfile(session.user.id);
+        setIsAuth(true);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setIsAuth(false);
+        setOrders([]);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Profile fetch error:', error.message);
+        return;
+      }
+      setUser(data);
+      await fetchOrders(userId, data.role === 'admin');
+    } catch (e: any) {
+      console.error('Exception in fetchUserProfile:', e.message);
+    }
+  };
+
+  const fetchOrders = async (userId: string, isAdmin: boolean) => {
+    try {
+      const query = supabase.from('orders').select('*').order('date', { ascending: false });
+      if (!isAdmin) query.eq('userId', userId);
+      
+      const { data, error } = await query;
+      if (error) {
+        console.error('Orders fetch error:', error.message);
+      } else if (data) {
+        setOrders(data);
+      }
+    } catch (e: any) {
+      console.error('Exception in fetchOrders:', e.message);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
-
-  useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
-  }, [user]);
-
-  useEffect(() => {
-    localStorage.setItem('orders', JSON.stringify(orders));
-  }, [orders]);
-
-  useEffect(() => {
-    localStorage.setItem('settings', JSON.stringify(settings));
-  }, [settings]);
 
   const addToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     const id = Date.now();
@@ -108,127 +175,217 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1, variants: Partial<CartItem> = {}) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => 
+        item.id === product.id && 
+        item.selectedAccountType === variants.selectedAccountType &&
+        item.selectedDuration === variants.selectedDuration &&
+        item.selectedSlots === variants.selectedSlots
+      );
+
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item);
+        return prev.map(item => 
+          (item.id === product.id && 
+           item.selectedAccountType === variants.selectedAccountType &&
+           item.selectedDuration === variants.selectedDuration &&
+           item.selectedSlots === variants.selectedSlots)
+          ? { ...item, quantity: item.quantity + quantity } 
+          : item
+        );
       }
-      return [...prev, { ...product, quantity }];
+
+      const newItem: CartItem = { 
+        ...product, 
+        quantity,
+        ...variants 
+      };
+      return [...prev, newItem];
     });
     addToast(`${product.name} added to cart`);
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId: string) => {
+    setCart(prev => prev.filter((_, idx) => idx.toString() !== cartItemId));
   };
 
-  const updateCartQuantity = (productId: string, quantity: number) => {
+  const updateCartQuantity = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
       return;
     }
-    setCart(prev => prev.map(item => item.id === productId ? { ...item, quantity } : item));
+    setCart(prev => prev.map((item, idx) => idx.toString() === cartItemId ? { ...item, quantity } : item));
   };
 
   const clearCart = () => setCart([]);
 
   const toggleWishlist = (productId: string) => {
-    const product = products.find(p => p.id === productId);
     const isAdding = !wishlist.includes(productId);
     setWishlist(prev => isAdding ? [...prev, productId] : prev.filter(id => id !== productId));
-    if (product) {
-      addToast(isAdding ? `Saved to wishlist` : `Removed from wishlist`, 'info');
+    addToast(isAdding ? `Saved to wishlist` : `Removed from wishlist`, 'info');
+  };
+
+  const login = async (email: string, pass: string): Promise<boolean> => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      addToast(error.message, 'error');
+      return false;
+    }
+    return true;
+  };
+
+  const signup = async (email: string, pass: string, name: string): Promise<boolean> => {
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password: pass,
+      options: { data: { full_name: name } }
+    });
+    
+    if (error) {
+      addToast(error.message, 'error');
+      return false;
+    }
+    if (data.user) {
+      addToast('Welcome to Elite Inventory!', 'success');
+    }
+    return true;
+  };
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // Omitting the hash during the handshake often resolves callback parsing issues
+        redirectTo: window.location.origin, 
+      },
+    });
+    if (error) {
+      console.error('OAuth Error:', error.message);
+      addToast(`Login failed: ${error.message}`, 'error');
     }
   };
 
-  const login = (emailOrUsername: string, pass: string): boolean => {
-    const matchedAccount = DEMO_ACCOUNTS.find(
-      acc => acc.username === emailOrUsername && acc.password === pass
-    );
-
-    if (matchedAccount) {
-      const newUser: User = {
-        ...matchedAccount.data,
-        role: matchedAccount.role
-      };
-      setUser(newUser);
-      setIsAuth(true);
-      addToast(`Authenticated as ${matchedAccount.role}`);
-      return true;
+  const updatePassword = async (newPass: string): Promise<boolean> => {
+    const { error } = await supabase.auth.updateUser({ password: newPass });
+    if (error) {
+      addToast(error.message, 'error');
+      return false;
     }
-
-    if (pass === '1234' || emailOrUsername.includes('@')) {
-       const role: 'user' | 'admin' = emailOrUsername.includes('admin') ? 'admin' : 'user';
-       const newUser: User = { ...DUMMY_USER, email: emailOrUsername, role };
-       setUser(newUser);
-       setIsAuth(true);
-       addToast(`Authenticated as ${role}`);
-       return true;
-    }
-
-    addToast('Invalid credentials provided', 'error');
-    return false;
+    addToast('Password updated successfully', 'success');
+    return true;
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuth(false);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    await supabase.auth.signOut();
     addToast('Logged out safely');
   };
 
-  const updateUser = (userData: Partial<User>) => {
-    setUser(prev => prev ? { ...prev, ...userData } : null);
-    addToast('Profile updated successfully');
+  const updateUser = async (userData: Partial<User>) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('profiles')
+      .update(userData)
+      .eq('id', user.id);
+    
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setUser({ ...user, ...userData });
+      addToast('Identity updated');
+    }
   };
 
-  const addOrder = (order: Order) => {
-    setOrders(prev => [order, ...prev]);
+  const addOrder = async (order: Order) => {
+    const { error } = await supabase.from('orders').insert([order]);
+    if (error) {
+      console.error('Order Insert Error:', error.message);
+      addToast('Verification failed. Try again.', 'error');
+    } else {
+      setOrders(prev => [order, ...prev]);
+      addToast('Order placed successfully');
+    }
   };
 
-  const deleteOrder = (id: string) => {
-    setOrders(prev => prev.filter(o => o.id !== id));
-    addToast('Order record removed', 'info');
+  const deleteOrder = async (id: string) => {
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setOrders(prev => prev.filter(o => o.id !== id));
+    }
   };
 
-  const addProduct = (product: Product) => {
-    setProducts(prev => [product, ...prev]);
-    addToast('New product added to inventory');
+  const addProduct = async (product: Product) => {
+    const { error } = await supabase.from('products').insert([product]);
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setProducts(prev => [product, ...prev]);
+      addToast('Asset added to inventory');
+    }
   };
 
-  const updateProduct = (product: Product) => {
-    setProducts(prev => prev.map(p => p.id === product.id ? product : p));
-    addToast('Product updated successfully');
+  const updateProduct = async (product: Product) => {
+    const { error } = await supabase.from('products').update(product).eq('id', product.id);
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setProducts(prev => prev.map(p => p.id === product.id ? product : p));
+      addToast('Inventory updated');
+    }
   };
 
-  const deleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
-    addToast('Product removed from inventory', 'info');
+  const deleteProduct = async (id: string) => {
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setProducts(prev => prev.filter(p => p.id !== id));
+      addToast('Asset removed');
+    }
   };
   
-  const updateOrderStatus = (orderId: string, status: Order['status']) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
-    addToast(`Order ${orderId} status changed to ${status}`);
+  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
+    const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+    }
   };
 
-  const fulfillOrder = (orderId: string, data: string) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered', fulfillmentData: data } : o));
-    addToast(`Order ${orderId} fulfilled successfully`, 'success');
+  const fulfillOrder = async (orderId: string, data: string) => {
+    const { error } = await supabase.from('orders').update({ 
+      status: 'delivered', 
+      fulfillmentData: data 
+    }).eq('id', orderId);
+    
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered', fulfillmentData: data } : o));
+      addToast('Asset delivered successfully');
+    }
   };
 
-  const updateSettings = (newSettings: Partial<AppSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
-    addToast('System settings updated');
+  const updateSettings = async (newSettings: Partial<AppSettings>) => {
+    const updated = { ...settings, ...newSettings };
+    const { error } = await supabase.from('settings').upsert({ key: 'global', value: updated });
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      setSettings(updated);
+      addToast('Global config updated');
+    }
   };
 
   const setChatOpen = (open: boolean) => setIsChatOpen(open);
 
   return (
     <AppContext.Provider value={{
-      products, cart, wishlist, user, orders, isAuth, toasts, settings, isChatOpen,
+      products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
-      login, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
+      login, signup, signInWithGoogle, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
       fulfillOrder, updateSettings, addToast, removeToast, setChatOpen
     }}>
       {children}

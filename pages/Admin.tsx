@@ -5,7 +5,7 @@ import {
   ShoppingCart, Users, X, Smartphone, Info, ImageIcon, Eye, 
   Settings as SettingsIcon, AlertCircle, TrendingUp, CheckCircle2, 
   Clock, Filter, ShieldAlert, ArrowUpRight, Copy, ExternalLink,
-  Key as KeyIcon, Link as LinkIcon
+  Key as KeyIcon, Link as LinkIcon, Layers
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { Product, Order, User } from '../types';
@@ -45,9 +45,9 @@ const Admin: React.FC = () => {
 
   const stats = [
     { label: 'Revenue', value: '৳' + analytics.revenue.toLocaleString(), icon: Database, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Active Orders', value: analytics.totalOrders, icon: ShoppingCart, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Asset Count', value: products.length, icon: Package, color: 'text-slate-700', bg: 'bg-slate-100' },
-    { label: 'Verification Pending', value: analytics.pendingCount, icon: ShieldAlert, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Total Orders', value: analytics.totalOrders, icon: ShoppingCart, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: 'Total Products', value: products.length, icon: Package, color: 'text-slate-700', bg: 'bg-slate-100' },
+    { label: 'Pending Orders', value: analytics.pendingCount, icon: ShieldAlert, color: 'text-amber-600', bg: 'bg-amber-50' },
   ];
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -66,7 +66,10 @@ const Admin: React.FC = () => {
       stock: parseInt(formData.get('stock') as string),
       rating: editingProduct?.rating || 4.5,
       description: formData.get('description') as string,
-      featured: formData.get('featured') === 'on'
+      featured: formData.get('featured') === 'on',
+      is_shared_personal_enabled: formData.get('is_shared_personal_enabled') === 'on',
+      is_duration_enabled: formData.get('is_duration_enabled') === 'on',
+      is_slots_enabled: formData.get('is_slots_enabled') === 'on'
     };
 
     if (editingProduct) updateProduct(product);
@@ -111,17 +114,16 @@ const Admin: React.FC = () => {
         {/* Sidebar Nav */}
         <aside className="w-full lg:w-64 flex flex-col gap-4">
           <div className="bg-slate-900 rounded-[2rem] p-6 text-white">
-            <h2 className="text-xl font-bold tracking-tight">Admin Suite</h2>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Infrastructure Control</p>
+            <h2 className="text-xl font-bold tracking-tight">Admin Panel</h2>
           </div>
 
           <nav className="bg-white p-2 rounded-[2rem] border border-slate-100 shadow-sm space-y-1 overflow-x-auto no-scrollbar flex lg:flex-col items-center lg:items-stretch">
             {[
-              { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
-              { id: 'products', label: 'Inventory', icon: Package },
-              { id: 'orders', label: 'Transactions', icon: ShoppingCart },
+              { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'products', label: 'Products', icon: Package },
+              { id: 'orders', label: 'Orders', icon: ShoppingCart },
               { id: 'users', label: 'Customers', icon: Users },
-              { id: 'settings', label: 'System Config', icon: SettingsIcon },
+              { id: 'settings', label: 'Settings', icon: SettingsIcon },
             ].map((tab) => (
               <button 
                 key={tab.id}
@@ -163,7 +165,7 @@ const Admin: React.FC = () => {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
                   <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold text-slate-900">Recent Transactions</h3>
+                    <h3 className="font-bold text-slate-900">Recent Orders</h3>
                     <TrendingUp className="w-4 h-4 text-emerald-500" />
                   </div>
                   <div className="divide-y divide-slate-100 overflow-x-auto">
@@ -187,12 +189,12 @@ const Admin: React.FC = () => {
                 </div>
 
                 <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 space-y-6">
-                  <h3 className="font-bold text-slate-900">Inventory Status</h3>
+                  <h3 className="font-bold text-slate-900">Stock Status</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-4 bg-rose-50 rounded-2xl border border-rose-100 text-rose-700">
                       <div className="flex items-center gap-3">
                         <AlertCircle className="w-5 h-5" />
-                        <span className="text-sm font-bold">Out of Stock Items</span>
+                        <span className="text-sm font-bold">Out of Stock Products</span>
                       </div>
                       <span className="text-xl font-bold">{analytics.outOfStock}</span>
                     </div>
@@ -204,7 +206,7 @@ const Admin: React.FC = () => {
                       <span className="text-xl font-bold">{analytics.lowStock}</span>
                     </div>
                   </div>
-                  <button onClick={() => setActiveTab('products')} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">Manage Inventory</button>
+                  <button onClick={() => setActiveTab('products')} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">Manage Products</button>
                 </div>
               </div>
             </div>
@@ -217,7 +219,7 @@ const Admin: React.FC = () => {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input 
                     type="text" 
-                    placeholder="Search assets..." 
+                    placeholder="Search products..." 
                     value={productSearch}
                     onChange={e => setProductSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all" 
@@ -237,7 +239,7 @@ const Admin: React.FC = () => {
                     <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
                       <th className="px-8 py-5">Product Details</th>
                       <th className="px-8 py-5">Category</th>
-                      <th className="px-8 py-5">Unit Price</th>
+                      <th className="px-8 py-5">Price</th>
                       <th className="px-8 py-5">Availability</th>
                       <th className="px-8 py-5 text-right">Actions</th>
                     </tr>
@@ -292,12 +294,12 @@ const Admin: React.FC = () => {
           {activeTab === 'orders' && (
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden animate-fadeIn">
                <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <h2 className="text-xl font-bold text-slate-900">Manual Verification Queue</h2>
+                <h2 className="text-xl font-bold text-slate-900">Manage Orders</h2>
                 <div className="relative flex-1 max-w-md w-full">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input 
                     type="text" 
-                    placeholder="Filter by Order ID or TRX ID..." 
+                    placeholder="Search by Order ID or Transaction ID..." 
                     value={orderSearch}
                     onChange={e => setOrderSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-slate-900 outline-none" 
@@ -308,11 +310,11 @@ const Admin: React.FC = () => {
                 <table className="w-full text-left min-w-[1000px]">
                   <thead>
                     <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
-                      <th className="px-8 py-5">Context</th>
-                      <th className="px-8 py-5">MFS Sender</th>
-                      <th className="px-8 py-5">Transaction Proof</th>
+                      <th className="px-8 py-5">Order ID</th>
+                      <th className="px-8 py-5">Customer Phone</th>
+                      <th className="px-8 py-5">Payment Proof</th>
                       <th className="px-8 py-5">Status</th>
-                      <th className="px-8 py-5 text-right">Protocol</th>
+                      <th className="px-8 py-5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -320,7 +322,7 @@ const Admin: React.FC = () => {
                       <tr key={o.id} className="group hover:bg-slate-50 transition-colors">
                         <td className="px-8 py-6">
                           <div className="space-y-1">
-                            <p className="font-mono text-[10px] font-bold text-slate-900 select-all">{o.id}</p>
+                            <p className="font-mono text-[10px] font-bold text-slate-900 select-all uppercase">{o.id}</p>
                             <p className="text-xs font-bold text-slate-500 uppercase">{o.paymentMethod}</p>
                           </div>
                         </td>
@@ -341,7 +343,7 @@ const Admin: React.FC = () => {
                                 className="p-2.5 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
                               >
                                 <Eye className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Proof</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest">View Photo</span>
                               </button>
                             )}
                           </div>
@@ -361,10 +363,10 @@ const Admin: React.FC = () => {
                               onChange={(e) => handleStatusChange(o, e.target.value)}
                               className="text-[10px] font-bold uppercase bg-white border border-slate-200 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 transition-all cursor-pointer shadow-sm"
                             >
-                              <option value="pending">Wait</option>
-                              <option value="processing">Verify</option>
-                              <option value="shipped">Ship</option>
-                              <option value="delivered">Finish</option>
+                              <option value="pending">Pending</option>
+                              <option value="processing">Verifying</option>
+                              <option value="shipped">Shipping</option>
+                              <option value="delivered">Delivered</option>
                             </select>
                             <button onClick={() => deleteOrder(o.id)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
                               <Trash2 className="w-4 h-4" />
@@ -382,16 +384,16 @@ const Admin: React.FC = () => {
           {activeTab === 'users' && (
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden animate-fadeIn">
               <div className="p-8 border-b border-slate-100">
-                <h2 className="text-xl font-bold text-slate-900">Customer Directory</h2>
+                <h2 className="text-xl font-bold text-slate-900">Customer List</h2>
               </div>
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[700px]">
                   <thead>
                     <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
-                      <th className="px-8 py-5">Identity</th>
-                      <th className="px-8 py-5">Clearance</th>
-                      <th className="px-8 py-5">Communication</th>
-                      <th className="px-8 py-5 text-right">Control</th>
+                      <th className="px-8 py-5">Customer Name</th>
+                      <th className="px-8 py-5">Status</th>
+                      <th className="px-8 py-5">Contact</th>
+                      <th className="px-8 py-5 text-right">Manage</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -401,12 +403,12 @@ const Admin: React.FC = () => {
                           <div className="w-12 h-12 rounded-2xl bg-slate-900 flex-shrink-0 flex items-center justify-center text-white font-bold">EU</div>
                           <div>
                             <p className="font-bold text-slate-900 text-sm">eliteuser</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Member Since 2024</p>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Joined 2024</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest">Standard Tier</span>
+                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest">Active Member</span>
                       </td>
                       <td className="px-8 py-6">
                         <div className="space-y-1">
@@ -415,7 +417,7 @@ const Admin: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors">Profile Access</button>
+                        <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors">View Profile</button>
                       </td>
                     </tr>
                   </tbody>
@@ -433,14 +435,14 @@ const Admin: React.FC = () => {
                       <Smartphone className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">MFS Configuration</h3>
-                      <p className="text-xs text-slate-400">Update bKash and Nagad terminals.</p>
+                      <h3 className="font-bold text-slate-900 text-lg">Payment Settings</h3>
+                      <p className="text-xs text-slate-400">Update bKash and Nagad numbers.</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">bKash Personal Account</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">bKash Number</label>
                       <input 
                         type="text" 
                         value={settings.bkashNumber}
@@ -449,7 +451,7 @@ const Admin: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nagad Personal Account</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nagad Number</label>
                       <input 
                         type="text" 
                         value={settings.nagadNumber}
@@ -466,14 +468,14 @@ const Admin: React.FC = () => {
                       <AlertCircle className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">Platform Alerts</h3>
-                      <p className="text-xs text-slate-400">Manage site-wide notifications.</p>
+                      <h3 className="font-bold text-slate-900 text-lg">Site Announcements</h3>
+                      <p className="text-xs text-slate-400">Manage site-wide messages.</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Announcement Message</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Banner Message</label>
                       <textarea 
                         rows={3}
                         value={settings.announcement}
@@ -508,8 +510,8 @@ const Admin: React.FC = () => {
             <img src={previewImage} onError={handleImageError} className="w-full h-auto rounded-lg max-h-[80vh] object-contain" alt="Payment Proof" />
             <div className="p-4 sm:p-6 bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verification Evidence</p>
-                <p className="text-sm font-bold text-slate-900">MFS Transaction Packet</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment Evidence</p>
+                <p className="text-sm font-bold text-slate-900">Transaction Screenshot</p>
               </div>
               <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800">
                 <ExternalLink className="w-4 h-4" /> Open Full-Res
@@ -519,7 +521,7 @@ const Admin: React.FC = () => {
         </div>
       )}
 
-      {/* Asset Deployment (Key/Link) Modal */}
+      {/* Order Delivery Modal */}
       {isFulfillmentModalOpen && fulfillingOrder && (
         <div className="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-white rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl animate-scaleIn">
@@ -529,8 +531,8 @@ const Admin: React.FC = () => {
                    <KeyIcon className="w-5 h-5" />
                  </div>
                  <div>
-                   <h3 className="text-lg sm:text-xl font-bold text-slate-900">Asset Deployment</h3>
-                   <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">ID: {fulfillingOrder.id}</p>
+                   <h3 className="text-lg sm:text-xl font-bold text-slate-900">Order Delivery</h3>
+                   <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Order ID: {fulfillingOrder.id}</p>
                  </div>
                </div>
                <button onClick={() => setIsFulfillmentModalOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors p-2">
@@ -541,15 +543,15 @@ const Admin: React.FC = () => {
               <div className="space-y-4">
                 <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-start gap-3">
                   <Info className="w-4 h-4 text-indigo-600 mt-0.5" />
-                  <p className="text-[11px] text-indigo-700 leading-relaxed">Enter the digital license or delivery instructions. This will be available instantly in the user's secure dashboard.</p>
+                  <p className="text-[11px] text-indigo-700 leading-relaxed">Enter the product license or delivery instructions. The customer will receive this immediately in their dashboard.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asset Delivery Content</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Delivery Details (Key or Link)</label>
                   <div className="relative">
                     <LinkIcon className="absolute left-4 top-4 text-slate-400 w-4 h-4" />
                     <textarea 
-                      placeholder="Paste license key, user credentials, or secure download link..."
+                      placeholder="Paste license key, credentials, or secure download link..."
                       rows={4}
                       value={fulfillmentInput}
                       onChange={e => setFulfillmentInput(e.target.value)}
@@ -571,7 +573,7 @@ const Admin: React.FC = () => {
                   disabled={!fulfillmentInput.trim()}
                   className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all shadow-xl disabled:opacity-50"
                 >
-                  Deliver Asset
+                  Complete Order
                 </button>
               </div>
             </div>
@@ -589,71 +591,96 @@ const Admin: React.FC = () => {
                   {editingProduct ? <Edit2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{editingProduct ? 'Modify Asset' : 'New Asset'}</h3>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">System Record Manager</p>
+                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Product Editor</p>
                 </div>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-900 p-2 hover:bg-slate-100 rounded-full transition-all">
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <form onSubmit={handleSaveProduct} className="p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-              <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asset Nomenclature</label>
-                <input name="name" defaultValue={editingProduct?.name} required placeholder="e.g. ChatGPT Plus Official" className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-slate-900 text-sm" />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Price Unit (৳)</label>
-                <input name="price" type="number" step="1" defaultValue={editingProduct?.price} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stock Reservoir</label>
-                <input name="stock" type="number" defaultValue={editingProduct?.stock} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
-              </div>
-
-              <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Category Classification</label>
-                <select name="category" defaultValue={editingProduct?.category} className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none font-bold text-slate-700 text-sm">
-                  <option value="Writing Tools">Writing Tools</option>
-                  <option value="Educational Tools">Educational Tools</option>
-                  <option value="Graphics Tools">Graphics Tools</option>
-                  <option value="Graphics Resources">Graphics Resources</option>
-                  <option value="Premium VPN">Premium VPN</option>
-                  <option value="Software & Apps">Software & Apps</option>
-                  <option value="Marketing Tools">Marketing Tools</option>
-                  <option value="Web Elements">Web Elements</option>
-                  <option value="Gaming">Gaming</option>
-                  <option value="Streaming Platform">Streaming Platform</option>
-                  <option value="Gift Card">Gift Card</option>
-                </select>
-              </div>
-
-              <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Visual Asset URL</label>
-                <div className="relative">
-                  <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                  <input name="image" defaultValue={editingProduct?.image} className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-xs" placeholder="https://unsplash.com/..." />
+            <form onSubmit={handleSaveProduct} className="p-6 sm:p-10 space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Name</label>
+                  <input name="name" defaultValue={editingProduct?.name} required placeholder="e.g. ChatGPT Plus Official" className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-slate-900 text-sm" />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Price (৳)</label>
+                  <input name="price" type="number" step="1" defaultValue={editingProduct?.price} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stock Level</label>
+                  <input name="stock" type="number" defaultValue={editingProduct?.stock} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
                 </div>
               </div>
 
-              <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asset Description</label>
-                <textarea name="description" defaultValue={editingProduct?.description} rows={3} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm leading-relaxed" />
+              {/* Product Options */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  <Layers className="w-3 h-3" /> Product Variant Options
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-600 uppercase">Shared/Personal</span>
+                    <input type="checkbox" name="is_shared_personal_enabled" defaultChecked={editingProduct?.is_shared_personal_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
+                  </div>
+                  <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-600 uppercase">Duration</span>
+                    <input type="checkbox" name="is_duration_enabled" defaultChecked={editingProduct?.is_duration_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
+                  </div>
+                  <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-600 uppercase">Profile Slots</span>
+                    <input type="checkbox" name="is_slots_enabled" defaultChecked={editingProduct?.is_slots_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
+                  </div>
+                </div>
               </div>
 
-              <div className="sm:col-span-2 flex items-center justify-between bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Category Selection</label>
+                  <select name="category" defaultValue={editingProduct?.category} className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none font-bold text-slate-700 text-sm">
+                    <option value="Writing Tools">Writing Tools</option>
+                    <option value="Educational Tools">Educational Tools</option>
+                    <option value="Graphics Tools">Graphics Tools</option>
+                    <option value="Graphics Resources">Graphics Resources</option>
+                    <option value="Premium VPN">Premium VPN</option>
+                    <option value="Software & Apps">Software & Apps</option>
+                    <option value="Marketing Tools">Marketing Tools</option>
+                    <option value="Web Elements">Web Elements</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="Streaming Platform">Streaming Platform</option>
+                    <option value="Gift Card">Gift Card</option>
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Image URL</label>
+                  <div className="relative">
+                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <input name="image" defaultValue={editingProduct?.image} className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-xs" placeholder="https://image-url.com/photo.jpg" />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Description</label>
+                  <textarea name="description" defaultValue={editingProduct?.description} rows={3} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm leading-relaxed" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-5 h-5 text-indigo-500" />
-                  <label htmlFor="featured" className="text-[10px] font-bold text-slate-900 uppercase tracking-widest cursor-pointer">Promote to System Spotlight</label>
+                  <label htmlFor="featured" className="text-[10px] font-bold text-slate-900 uppercase tracking-widest cursor-pointer">Featured Product</label>
                 </div>
                 <input type="checkbox" name="featured" id="featured" defaultChecked={editingProduct?.featured} className="w-6 h-6 rounded-lg border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer" />
               </div>
 
-              <div className="sm:col-span-2 flex flex-col sm:flex-row gap-4 mt-4 pb-4 sm:pb-0">
+              <div className="flex flex-col sm:flex-row gap-4 mt-4 pb-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:flex-1 py-4 sm:py-5 bg-slate-100 rounded-2xl font-bold text-slate-600 hover:bg-slate-200 transition-all uppercase text-[10px] tracking-widest">Cancel</button>
-                <button type="submit" className="w-full sm:flex-[2] py-4 sm:py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl uppercase text-[10px] tracking-widest">Confirm Storage</button>
+                <button type="submit" className="w-full sm:flex-[2] py-4 sm:py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl uppercase text-[10px] tracking-widest">Save Product</button>
               </div>
             </form>
           </div>

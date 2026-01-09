@@ -100,8 +100,8 @@ const Home: React.FC = () => {
               <Cpu className="w-40 h-40 text-white" />
             </div>
             <div className="relative z-20 space-y-3">
-              <h3 className="text-3xl font-bold tracking-tight text-white">Dev Ecosystem</h3>
-              <p className="text-sm text-slate-400 max-w-xs font-light">Advanced AI tools and premium development environments.</p>
+              <h3 className="text-3xl font-bold tracking-tight text-white">Premium Softwares</h3>
+              <p className="text-sm text-slate-400 max-w-xs font-light">Essential licenses for productivity and professional efficiency.</p>
               <Link to="/shop?category=Software & Apps" className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full text-xs font-bold hover:bg-slate-100 transition-all uppercase tracking-widest mt-2">
                 Explore <ArrowRight className="w-4 h-4" />
               </Link>
@@ -114,8 +114,8 @@ const Home: React.FC = () => {
               <Play className="w-40 h-40 text-white" />
             </div>
             <div className="relative z-20 space-y-3">
-              <h3 className="text-3xl font-bold tracking-tight text-white">Media Nodes</h3>
-              <p className="text-sm text-slate-400 max-w-xs font-light">Ultra-HD streaming accounts and lossless audio subs.</p>
+              <h3 className="text-3xl font-bold tracking-tight text-white">Streaming Solutions</h3>
+              <p className="text-sm text-slate-400 max-w-xs font-light">Full access to global entertainment and ultra-HD media platforms.</p>
               <Link to="/shop?category=Streaming Platform" className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full text-xs font-bold hover:bg-slate-100 transition-all uppercase tracking-widest mt-2">
                 Explore <ArrowRight className="w-4 h-4" />
               </Link>

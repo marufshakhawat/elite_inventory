@@ -123,7 +123,11 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600">
-        <p>&copy; {new Date().getFullYear()} Elite Inventory. Developed with precision.</p>
+        <p className="text-center md:text-left leading-relaxed">
+          &copy; {new Date().getFullYear()} Elite Inventory.
+          <br className="md:hidden" />
+          <span className="md:ml-1">Developed with precision.</span>
+        </p>
         <div className="flex gap-10">
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>

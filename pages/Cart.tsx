@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, Layers, Clock, Users } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 
 const Cart: React.FC = () => {
@@ -34,8 +34,8 @@ const Cart: React.FC = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {cart.map(item => (
-            <div key={item.id} className="bg-white p-4 sm:p-6 rounded-[2rem] sm:rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+          {cart.map((item, idx) => (
+            <div key={`${item.id}-${idx}`} className="bg-white p-4 sm:p-6 rounded-[2rem] sm:rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
               <div className="w-32 h-32 sm:w-32 sm:h-32 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 shimmer">
                 <img 
                   src={item.image} 
@@ -48,24 +48,44 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate pr-4">{item.name}</h3>
                   <button 
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(idx.toString())}
                     className="p-2 text-slate-400 hover:text-slate-900 transition-colors shrink-0"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
+                
+                {/* Variant Display */}
+                <div className="flex flex-wrap gap-2 mb-4 justify-center sm:justify-start">
+                  {item.selectedAccountType && (
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600 uppercase border border-slate-100">
+                      <Layers className="w-3 h-3" /> {item.selectedAccountType}
+                    </span>
+                  )}
+                  {item.selectedDuration && (
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600 uppercase border border-slate-100">
+                      <Clock className="w-3 h-3" /> {item.selectedDuration}
+                    </span>
+                  )}
+                  {item.selectedSlots && (
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-600 uppercase border border-slate-100">
+                      <Users className="w-3 h-3" /> {item.selectedSlots}
+                    </span>
+                  )}
+                </div>
+
                 <p className="text-slate-900 font-bold mb-4">৳{item.price.toLocaleString()}</p>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="flex items-center border border-slate-200 rounded-full px-2 py-1 bg-slate-50">
                     <button 
-                      onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateCartQuantity(idx.toString(), item.quantity - 1)}
                       className="p-1 text-slate-500 hover:text-slate-900"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-8 text-center font-bold text-sm text-slate-900">{item.quantity}</span>
                     <button 
-                      onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateCartQuantity(idx.toString(), item.quantity + 1)}
                       className="p-1 text-slate-500 hover:text-slate-900"
                     >
                       <Plus className="w-4 h-4" />

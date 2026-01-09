@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { User as UserIcon, Package, Settings, MapPin, CreditCard, LogOut, ChevronRight, Key, Mail, Shield, CheckCircle2, Clock, Copy, ExternalLink, Smartphone, Camera, X, Lock, Fingerprint, AlertTriangle, Phone } from 'lucide-react';
+import { User as UserIcon, Package, Settings, MapPin, CreditCard, LogOut, ChevronRight, Key, Mail, Shield, CheckCircle2, Clock, Copy, ExternalLink, Smartphone, Camera, X, Lock, Fingerprint, AlertTriangle, Phone, Loader2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -8,10 +8,11 @@ type DashboardTab = 'info' | 'purchases' | 'history' | 'settings';
 type ActiveModal = 'password' | '2fa' | 'deactivate' | null;
 
 const Dashboard: React.FC = () => {
-  const { user, logout, orders, updateUser, addToast } = useApp();
+  const { user, logout, orders, updateUser, addToast, updatePassword } = useApp();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<DashboardTab>('purchases');
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [modalLoading, setModalLoading] = useState(false);
   
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [profileForm, setProfileForm] = useState({
@@ -21,9 +22,31 @@ const Dashboard: React.FC = () => {
     address: user?.address || ''
   });
 
+  const [passwordForm, setPasswordForm] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     updateUser(profileForm);
+  };
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      addToast('Passwords do not match', 'error');
+      return;
+    }
+    
+    setModalLoading(true);
+    const success = await updatePassword(passwordForm.newPassword);
+    setModalLoading(false);
+    
+    if (success) {
+      setActiveModal(null);
+      setPasswordForm({ newPassword: '', confirmPassword: '' });
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -396,21 +419,33 @@ const Dashboard: React.FC = () => {
               </div>
               <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-slate-50 rounded-full transition-all"><X className="w-6 h-6 text-slate-400" /></button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); setActiveModal(null); addToast('Password changed successfully', 'success'); }} className="p-8 space-y-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
-                <input type="password" required className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all" />
-              </div>
+            <form onSubmit={handlePasswordUpdate} className="p-8 space-y-6">
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Secure Password</label>
-                <input type="password" required className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all" />
+                <input 
+                  type="password" 
+                  required 
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all" 
+                />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
-                <input type="password" required className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all" />
+                <input 
+                  type="password" 
+                  required 
+                  value={passwordForm.confirmPassword}
+                  onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all" 
+                />
               </div>
-              <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all uppercase text-xs tracking-widest shadow-lg">
-                Update Credentials
+              <button 
+                type="submit" 
+                disabled={modalLoading}
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all uppercase text-xs tracking-widest shadow-lg flex items-center justify-center"
+              >
+                {modalLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Credentials'}
               </button>
             </form>
           </div>

@@ -58,9 +58,15 @@ const Checkout: React.FC = () => {
       return;
     }
 
+    if (!user) {
+      alert("You must be logged in to place an order.");
+      navigate('/login');
+      return;
+    }
+
     const newOrder = {
       id: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      userId: user?.id || 'guest',
+      userId: user.id, // Use the real UUID from Auth
       items: [...cart],
       total: total,
       status: 'pending' as const,

@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext';
-import { CheckCircle, Info, X, ChevronUp } from 'lucide-react';
+import { CheckCircle, Info, X, ChevronUp, Loader2 } from 'lucide-react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -84,7 +83,14 @@ const ToastContainer = () => {
 };
 
 const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean }> = ({ children, adminOnly = false }) => {
-  const { isAuth, user } = useApp();
+  const { isAuth, user, isLoading } = useApp();
+  
+  if (isLoading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="w-10 h-10 animate-spin text-slate-900" />
+    </div>
+  );
+
   if (!isAuth) return <Navigate to="/login" replace />;
   if (adminOnly && user?.role !== 'admin') return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
@@ -106,7 +112,6 @@ const AppContent: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           
-          {/* Legal and Informational Routes */}
           <Route path="/privacy" element={<Legal type="privacy" />} />
           <Route path="/terms" element={<Legal type="terms" />} />
           <Route path="/faq" element={<Legal type="faq" />} />
@@ -114,7 +119,6 @@ const AppContent: React.FC = () => {
           <Route path="/returns" element={<Legal type="returns" />} />
           <Route path="/cookies" element={<Legal type="cookies" />} />
 
-          {/* Protected Routes */}
           <Route 
             path="/checkout" 
             element={<ProtectedRoute><Checkout /></ProtectedRoute>} 
