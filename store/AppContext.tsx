@@ -75,9 +75,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         .eq('id', userId)
         .single();
       
-      // If profile is missing (common trigger failure on signup), attempt to repair/create it
       if (profileError || !profile) {
-        console.warn('Profile missing or inaccessible. Attempting auto-repair...');
+        console.warn('Profile missing. Attempting auto-repair...');
         const { data: { user: authUser } } = await supabase.auth.getUser();
         
         if (authUser) {
@@ -95,13 +94,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             .select()
             .single();
 
-          if (createError) {
-             console.error('Auto-repair failed:', createError);
-             // If we still can't create it, we use a fallback guest-style object to not break the UI
-             profile = newProfile as any;
-          } else {
-             profile = createdProfile;
-          }
+          profile = createError ? newProfile as any : createdProfile;
         }
       }
 
@@ -112,10 +105,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
 
       const isAdmin = profile?.role === 'admin';
-      const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
-      if (!isAdmin) orderQuery.eq('userId', userId);
       
-      const { data: orderData } = await orderQuery;
+      // Select with explicit columns if needed, but select('*') works with case-sensitive DB columns
+      const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
+      
+      if (!isAdmin) {
+        orderQuery.eq('userId', userId);
+      }
+      
+      const { data: orderData, error: orderError } = await orderQuery;
+      
+      if (orderError) {
+        console.error('Error fetching orders:', orderError);
+        // If the fetch fails because the column is still lowercase in the DB
+        // we might see the 42703 error here.
+      }
 
       setUser(profile);
       setIsAuth(true);
@@ -138,6 +142,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         if (prodRes.data && prodRes.data.length > 0) setProducts(prodRes.data);
         else setProducts(INITIAL_PRODUCTS);
+        
         if (settRes.data?.value) setSettings(settRes.data.value);
 
         const { data: { session } } = await supabase.auth.getSession();
@@ -158,9 +163,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        if (session?.user) {
-          await fetchProfileAndOrders(session.user.id);
-        }
+        if (session?.user) await fetchProfileAndOrders(session.user.id);
       } else if (event === 'SIGNED_OUT') {
         setIsAuth(false);
         setUser(null);
@@ -181,9 +184,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTimeout(() => removeToast(id), 5000);
   };
 
-  const removeToast = (id: number) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  };
+  const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const addToCart = (product: Product, quantity: number = 1, variants: Partial<CartItem> = {}) => {
     setCart(prev => {
@@ -231,7 +232,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     addToast(isAdding ? `Saved to wishlist` : `Removed from wishlist`, 'info');
   };
 
-  const login = async (email: string, pass: string): Promise<boolean> => {
+  const login = async (email: string, pass: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error) {
       addToast(error.message, 'error');
@@ -241,26 +242,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const signup = async (email: string, pass: string, name: string) => {
-    // We send both full_name and name to satisfy various possible trigger configurations
     const { data, error } = await supabase.auth.signUp({ 
-      email, 
-      password: pass,
-      options: { 
-        data: { 
-          full_name: name,
-          name: name
-        }, 
-        emailRedirectTo: window.location.origin + '/'
-      }
+      email, password: pass,
+      options: { data: { full_name: name, name: name }, emailRedirectTo: window.location.origin + '/' }
     });
-    
     if (error) {
       addToast(error.message, 'error');
       return false;
     }
-    if (data.user) {
-      addToast('Success! Verification email sent.', 'success');
-    }
+    if (data.user) addToast('Verification email sent.', 'success');
     return true;
   };
 
@@ -270,7 +260,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     else addToast('Verification email resent.', 'success');
   };
 
-  const updatePassword = async (newPass: string): Promise<boolean> => {
+  const updatePassword = async (newPass: string) => {
     const { error } = await supabase.auth.updateUser({ password: newPass });
     if (error) {
       addToast(error.message, 'error');
@@ -295,15 +285,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const deactivateAccount = async () => {
     if (!user) return;
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status: 'deactivated' })
-        .eq('id', user.id);
-      
+      const { error } = await supabase.from('profiles').update({ status: 'deactivated' }).eq('id', user.id);
       if (error) throw error;
-      
       await logout();
-      addToast('Account deactivated successfully.', 'info');
+      addToast('Account deactivated.', 'info');
     } catch (err: any) {
       addToast(err.message || 'Failed to deactivate account.', 'error');
     }
@@ -320,9 +305,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addOrder = async (order: Order) => {
+    // Explicitly inserting the order. 
+    // If the database has quoted columns, this will match exactly.
     const { error } = await supabase.from('orders').insert([order]);
-    if (error) addToast('Failed to place order.', 'error');
-    else {
+    if (error) {
+      console.error('DATABASE INSERTION FAILED:', error);
+      addToast(`Order Placement Error: ${error.message}`, 'error');
+    } else {
       setOrders(prev => [order, ...prev]);
       addToast('Order placed! Awaiting verification.');
     }
