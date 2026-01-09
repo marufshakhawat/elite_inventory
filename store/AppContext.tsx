@@ -84,7 +84,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           .select('*');
         
         if (productsError) {
-          console.error('Database Error (Products):', productsError.message);
           setProducts(INITIAL_PRODUCTS);
         } else if (productsData && productsData.length > 0) {
           setProducts(productsData);
@@ -103,7 +102,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
 
       } catch (err: any) {
-        console.error('Initialization caught error:', err.message || 'Unknown network error');
         setProducts(INITIAL_PRODUCTS);
       } finally {
         setIsLoading(false);
@@ -114,15 +112,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
-        setIsLoading(true);
         await fetchUserProfile(session.user.id);
         setIsAuth(true);
-        setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAuth(false);
         setOrders([]);
-        setIsLoading(false);
       }
     });
 
@@ -130,38 +125,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Profile fetch error:', error.message);
-        return;
-      }
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (!error && data) {
       setUser(data);
       await fetchOrders(userId, data.role === 'admin');
-    } catch (e: any) {
-      console.error('Exception in fetchUserProfile:', e.message);
     }
   };
 
   const fetchOrders = async (userId: string, isAdmin: boolean) => {
-    try {
-      const query = supabase.from('orders').select('*').order('date', { ascending: false });
-      if (!isAdmin) query.eq('userId', userId);
-      
-      const { data, error } = await query;
-      if (error) {
-        console.error('Orders fetch error:', error.message);
-      } else if (data) {
-        setOrders(data);
-      }
-    } catch (e: any) {
-      console.error('Exception in fetchOrders:', e.message);
-    }
+    const query = supabase.from('orders').select('*').order('date', { ascending: false });
+    if (!isAdmin) query.eq('userId', userId);
+    
+    const { data } = await query;
+    if (data) setOrders(data);
   };
 
   useEffect(() => {
@@ -170,11 +151,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     const id = Date.now();
-    setToasts(prev => {
-      const isDuplicate = prev.some(t => t.message === message);
-      if (isDuplicate) return prev;
-      return [...prev, { id, message, type }];
-    });
+    setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => removeToast(id), 5000);
   };
 
@@ -202,11 +179,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         );
       }
 
-      const newItem: CartItem = { 
-        ...product, 
-        quantity,
-        ...variants 
-      };
+      const newItem: CartItem = { ...product, quantity, ...variants };
       return [...prev, newItem];
     });
     addToast(`${product.name} added to cart`);
@@ -235,53 +208,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const login = async (email: string, pass: string): Promise<boolean> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error) {
-      if (error.message.toLowerCase().includes('email not confirmed')) {
-        addToast('Verification pending. Please check your inbox.', 'error');
-      } else {
-        addToast(error.message, 'error');
-      }
+      addToast(error.message, 'error');
       return false;
     }
     return true;
   };
 
   const signup = async (email: string, pass: string, name: string): Promise<boolean> => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
-    if (!passwordRegex.test(pass)) {
-      addToast('Password should be at least 8 characters. Password should contain at least one character of each: uppercase, lowercase, number, symbol.', 'error');
-      return false;
-    }
-
     const { data, error } = await supabase.auth.signUp({ 
       email, 
       password: pass,
-      options: { data: { full_name: name } }
+      options: { data: { full_name: name }, emailRedirectTo: window.location.origin + '/dashboard' }
     });
     
     if (error) {
       if (error.message.toLowerCase().includes('already registered')) {
-        addToast('One email can only be registered once. This address is already in use.', 'error');
+        window.location.href = `/login?registered=true`;
       } else {
         addToast(error.message, 'error');
       }
       return false;
     }
     if (data.user) {
-      addToast('Account created. Check your email to verify identity.', 'success');
+      addToast('Success! Check your email to verify your account.', 'success');
     }
     return true;
   };
 
   const resendVerification = async (email: string) => {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: email,
-    });
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
-      addToast('Verification email resent.', 'success');
-    }
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    if (error) addToast(error.message, 'error');
+    else addToast('Verification email resent.', 'success');
   };
 
   const updatePassword = async (newPass: string): Promise<boolean> => {
@@ -295,60 +252,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
-    setIsLoading(true);
     await supabase.auth.signOut();
-    addToast('Signed out safely.');
-    setIsLoading(false);
+    addToast('Signed out successfully.');
   };
 
   const updateUser = async (userData: Partial<User>) => {
     if (!user) return;
-    
-    const allowedUpdates = {
-      name: userData.name,
-      phone: userData.phone,
-      avatar: userData.avatar,
-      address: userData.address
-    };
-
-    const { error } = await supabase
-      .from('profiles')
-      .update(allowedUpdates)
-      .eq('id', user.id);
-    
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
-      setUser({ ...user, ...allowedUpdates });
+    const { error } = await supabase.from('profiles').update(userData).eq('id', user.id);
+    if (error) addToast(error.message, 'error');
+    else {
+      setUser({ ...user, ...userData });
       addToast('Profile updated.');
     }
   };
 
   const addOrder = async (order: Order) => {
     const { error } = await supabase.from('orders').insert([order]);
-    if (error) {
-      addToast('Failed to place order. Try again.', 'error');
-    } else {
+    if (error) addToast('Failed to place order.', 'error');
+    else {
       setOrders(prev => [order, ...prev]);
-      addToast('Order submitted for verification.');
+      addToast('Order placed! Awaiting verification.');
     }
   };
 
   const deleteOrder = async (id: string) => {
     const { error } = await supabase.from('orders').delete().eq('id', id);
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
-      setOrders(prev => prev.filter(o => o.id !== id));
-    }
+    if (error) addToast(error.message, 'error');
+    else setOrders(prev => prev.filter(o => o.id !== id));
   };
 
   const addProduct = async (product: Product) => {
     const productWithSlug = { ...product, slug: product.slug || slugify(product.name) };
     const { error } = await supabase.from('products').insert([productWithSlug]);
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
+    if (error) addToast(error.message, 'error');
+    else {
       setProducts(prev => [productWithSlug, ...prev]);
       addToast('Product added.');
     }
@@ -357,9 +294,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateProduct = async (product: Product) => {
     const productWithSlug = { ...product, slug: slugify(product.name) };
     const { error } = await supabase.from('products').update(productWithSlug).eq('id', product.id);
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
+    if (error) addToast(error.message, 'error');
+    else {
       setProducts(prev => prev.map(p => p.id === product.id ? productWithSlug : p));
       addToast('Inventory updated.');
     }
@@ -367,9 +303,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const deleteProduct = async (id: string) => {
     const { error } = await supabase.from('products').delete().eq('id', id);
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
+    if (error) addToast(error.message, 'error');
+    else {
       setProducts(prev => prev.filter(p => p.id !== id));
       addToast('Product removed.');
     }
@@ -377,11 +312,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   
   const updateOrderStatus = async (orderId: string, status: Order['status']) => {
     const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
-    }
+    if (error) addToast(error.message, 'error');
+    else setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
   };
 
   const fulfillOrder = async (orderId: string, data: string) => {
@@ -390,9 +322,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       fulfillmentData: data 
     }).eq('id', orderId);
     
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
+    if (error) addToast(error.message, 'error');
+    else {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered', fulfillmentData: data } : o));
       addToast('Order fulfilled.');
     }
@@ -401,22 +332,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateSettings = async (newSettings: Partial<AppSettings>) => {
     const updated = { ...settings, ...newSettings };
     const { error } = await supabase.from('settings').upsert({ key: 'global', value: updated });
-    if (error) {
-      addToast(error.message, 'error');
-    } else {
+    if (error) addToast(error.message, 'error');
+    else {
       setSettings(updated);
       addToast('Settings updated.');
     }
   };
-
-  const setChatOpen = (open: boolean) => setIsChatOpen(open);
 
   return (
     <AppContext.Provider value={{
       products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
       login, signup, resendVerification, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
-      fulfillOrder, updateSettings, addToast, removeToast, setChatOpen
+      fulfillOrder, updateSettings, addToast, removeToast, setChatOpen: setIsChatOpen
     }}>
       {children}
     </AppContext.Provider>
