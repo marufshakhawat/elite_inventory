@@ -9,7 +9,7 @@ type DashboardTab = 'info' | 'purchases' | 'history' | 'settings';
 type ActiveModal = 'password' | 'deactivate' | null;
 
 const Dashboard: React.FC = () => {
-  const { user, logout, orders, updateUser, addToast, updatePassword, isLoading } = useApp();
+  const { user, logout, orders, updateUser, addToast, updatePassword, deactivateAccount, isLoading } = useApp();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<DashboardTab>('purchases');
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
@@ -83,9 +83,11 @@ const Dashboard: React.FC = () => {
     addToast('License data copied to clipboard', 'info');
   };
 
-  const handleDeactivate = () => {
-    addToast('Account deactivation requested', 'info');
-    logout();
+  const handleDeactivate = async () => {
+    setModalLoading(true);
+    await deactivateAccount();
+    setModalLoading(false);
+    setActiveModal(null);
     navigate('/');
   };
 
@@ -328,6 +330,45 @@ const Dashboard: React.FC = () => {
                 {modalLoading ? <LoadingDots color="text-white" /> : 'Update Password'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'deactivate' && (
+        <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn">
+            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-rose-50/50">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-6 h-6 text-rose-600" />
+                <h3 className="text-xl font-bold tracking-tight text-rose-900">Deactivate Account</h3>
+              </div>
+              <button onClick={() => setActiveModal(null)}><X className="w-6 h-6 text-slate-400" /></button>
+            </div>
+            <div className="p-8 space-y-6">
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Are you sure you want to deactivate your account? This action will:
+              </p>
+              <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside">
+                <li>Log you out immediately on all devices</li>
+                <li>Prevent you from accessing your purchased licenses</li>
+                <li>Disable your ability to place new orders</li>
+              </ul>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={handleDeactivate} 
+                  disabled={modalLoading}
+                  className="w-full py-4 bg-rose-600 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-rose-700 transition-all flex items-center justify-center"
+                >
+                  {modalLoading ? <LoadingDots color="text-white" /> : 'Confirm Deactivation'}
+                </button>
+                <button 
+                  onClick={() => setActiveModal(null)}
+                  className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

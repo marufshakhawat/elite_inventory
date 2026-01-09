@@ -31,6 +31,7 @@ interface AppContextType {
   resendVerification: (email: string) => Promise<void>;
   updatePassword: (newPass: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  deactivateAccount: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
   addOrder: (order: Order) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
@@ -79,6 +80,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       
       if (profileError) throw profileError;
 
+      // Check if account is deactivated
+      if (profile.status === 'deactivated' || profile.status === 'suspended') {
+        await logout();
+        addToast('This account has been deactivated.', 'error');
+        return;
+      }
+
       const isAdmin = profile.role === 'admin';
       const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
       if (!isAdmin) orderQuery.eq('userId', userId);
@@ -90,7 +98,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setOrders(orderData || []);
     } catch (err) {
       console.error('Data sync error:', err);
-      // If profile fails, we don't treat them as auth'd because we need the role
       setIsAuth(false);
       setUser(null);
     }
@@ -100,7 +107,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const init = async () => {
       setIsLoading(true);
       try {
-        // Load global data first
         const [prodRes, settRes] = await Promise.all([
           supabase.from('products').select('*'),
           supabase.from('settings').select('*').eq('key', 'global').single()
@@ -110,7 +116,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         else setProducts(INITIAL_PRODUCTS);
         if (settRes.data?.value) setSettings(settRes.data.value);
 
-        // Check for session
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           await fetchProfileAndOrders(session.user.id);
@@ -217,7 +222,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       password: pass,
       options: { 
         data: { full_name: name }, 
-        emailRedirectTo: window.location.origin + '/' // Land on home to avoid 404s
+        emailRedirectTo: window.location.origin + '/'
       }
     });
     
@@ -248,17 +253,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
-    // 1. Clear state immediately for UI responsiveness
     setIsAuth(false);
     setUser(null);
     setOrders([]);
-    
     try {
-      // 2. Call Supabase
       await supabase.auth.signOut();
       addToast('Signed out successfully.');
     } catch (e) {
       console.error('Logout error:', e);
+    }
+  };
+
+  const deactivateAccount = async () => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: 'deactivated' })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      await logout();
+      addToast('Account deactivated successfully.', 'info');
+    } catch (err: any) {
+      addToast(err.message || 'Failed to deactivate account.', 'error');
     }
   };
 
@@ -349,7 +368,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     <AppContext.Provider value={{
       products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
-      login, signup, resendVerification, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
+      login, signup, resendVerification, updatePassword, logout, deactivateAccount, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
       fulfillOrder, updateSettings, addToast, removeToast, setChatOpen: setIsChatOpen
     }}>
       {children}
