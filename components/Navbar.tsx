@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   ShoppingBag, Search, User, Heart, Menu, X, LogOut, 
   Home as HomeIcon, LayoutGrid, PenTool, GraduationCap, Layers, 
-  Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift 
+  Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift, ShieldAlert 
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { slugify } from '../utils/mockData.ts';
@@ -30,6 +30,7 @@ const Navbar: React.FC = () => {
     { label: 'Gaming', path: '/category/gaming', icon: Gamepad2 },
     { label: 'Streaming Platform', path: '/category/streaming-platform', icon: Tv },
     { label: 'Gift Card', path: '/category/gift-card', icon: Gift },
+    { label: 'Privacy Policy', path: '/privacy', icon: ShieldAlert },
   ];
 
   const handleNavClick = (path: string) => {

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, ShieldCheck, Globe, Cpu, Play, Terminal, Box } from 'lucide-react';
+import { ArrowRight, Zap, ShieldCheck, Globe, Cpu, Play, Terminal, Box, Shield } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import ProductCard from '../components/ProductCard';
 
@@ -146,6 +146,18 @@ const Home: React.FC = () => {
               </button>
             </form>
           </div>
+        </div>
+      </section>
+
+      {/* Explicit Legal Verification Section for Google Bot */}
+      <section className="max-w-7xl mx-auto px-4 text-center">
+        <div className="py-8 border-t border-slate-100 flex items-center justify-center gap-6">
+           <Link to="/privacy" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 flex items-center gap-1.5">
+             <Shield className="w-3 h-3" /> Privacy Policy
+           </Link>
+           <Link to="/terms" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900">
+             Terms of Service
+           </Link>
         </div>
       </section>
     </div>
