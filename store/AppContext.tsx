@@ -114,12 +114,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+        setIsLoading(true);
         await fetchUserProfile(session.user.id);
         setIsAuth(true);
+        setIsLoading(false);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAuth(false);
         setOrders([]);
+        setIsLoading(false);
       }
     });
 
@@ -167,8 +170,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => removeToast(id), 3000);
+    setToasts(prev => {
+      // Prevent duplicate messages if they appear within a short interval
+      const isDuplicate = prev.some(t => t.message === message);
+      if (isDuplicate) return prev;
+      return [...prev, { id, message, type }];
+    });
+    setTimeout(() => removeToast(id), 4000);
   };
 
   const removeToast = (id: number) => {
@@ -239,6 +247,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const signup = async (email: string, pass: string, name: string): Promise<boolean> => {
+    // Stricter Password Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+    if (!passwordRegex.test(pass)) {
+      addToast('Password should be at least 8 characters. Password should contain at least one character of each: uppercase, lowercase, number, symbol.', 'error');
+      return false;
+    }
+
     const { data, error } = await supabase.auth.signUp({ 
       email, 
       password: pass,
@@ -246,11 +261,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
     
     if (error) {
-      addToast(error.message, 'error');
+      if (error.message.toLowerCase().includes('already registered')) {
+        addToast('One email can only be registered once. This address is already in use.', 'error');
+      } else {
+        addToast(error.message, 'error');
+      }
       return false;
     }
     if (data.user) {
-      addToast('Check your email to verify your account.', 'info');
+      addToast('Account created. Please check your email to verify.', 'success');
     }
     return true;
   };
@@ -278,14 +297,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
+    setIsLoading(true);
     await supabase.auth.signOut();
     addToast('Logged out safely');
+    setIsLoading(false);
   };
 
   const updateUser = async (userData: Partial<User>) => {
     if (!user) return;
     
-    // SECURITY: Strictly filter fields to prevent users from changing their own role/status
     const allowedUpdates = {
       name: userData.name,
       phone: userData.phone,

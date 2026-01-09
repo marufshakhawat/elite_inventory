@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw, Info, Timer } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertTriangle, RefreshCw, Info, Timer, ShieldCheck } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { LoadingDots } from '../App';
 
 type AuthView = 'login' | 'signup';
 
@@ -17,8 +18,19 @@ const Auth: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isLinkExpired = searchParams.get('error') === 'expired';
 
-  const { login, signup, resendVerification } = useApp();
+  const { login, signup, resendVerification, isAuth, isLoading, user } = useApp();
   const navigate = useNavigate();
+
+  // Optimized redirect flow to handle role transitions smoothly
+  useEffect(() => {
+    if (isAuth && !isLoading && user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [isAuth, isLoading, user, navigate]);
 
   useEffect(() => {
     if (isLinkExpired) {
@@ -34,11 +46,11 @@ const Auth: React.FC = () => {
     
     if (view === 'login') {
       const success = await login(email, password);
-      if (success) {
-        navigate('/dashboard');
-      } else {
+      if (!success) {
         setShowResend(true);
+        setLoading(false);
       }
+      // If success, the AppContext's auth state change effect handles the redirect
     } else if (view === 'signup') {
       try {
         const success = await signup(email, password, name);
@@ -52,10 +64,10 @@ const Auth: React.FC = () => {
         if (msg.includes('error sending') || msg.includes('smtp')) {
           setSmtpError(true);
         }
+      } finally {
+        setLoading(false);
       }
     }
-
-    setLoading(false);
   };
 
   const handleResend = async () => {
@@ -74,9 +86,15 @@ const Auth: React.FC = () => {
   };
 
   const getSubtitle = () => {
-    if (view === 'login') return 'Please enter your details to login.';
-    return 'Start your premium shopping journey.';
+    if (view === 'login') return 'Log in to your secure workspace.';
+    return 'Access the professional marketplace.';
   };
+
+  if (isLoading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <LoadingDots />
+    </div>
+  );
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
@@ -85,18 +103,18 @@ const Auth: React.FC = () => {
           <Link to="/" className="inline-block mb-6">
             <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[220px] h-auto mx-auto" />
           </Link>
-          <h2 className="text-3xl font-bold text-slate-900">{getTitle()}</h2>
-          <p className="text-slate-500 mt-2">{getSubtitle()}</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{getTitle()}</h2>
+          <p className="text-slate-500 mt-2 font-medium">{getSubtitle()}</p>
         </div>
 
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl relative overflow-hidden">
           {isLinkExpired && (
              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3 items-start animate-fadeIn">
                 <Timer className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-rose-900 uppercase">Verification Link Expired</p>
-                  <p className="text-[10px] text-rose-700 mt-1 leading-normal uppercase">
-                    Security tokens expire after a short time. Please enter your email below and click "Resend" to get a fresh link.
+                  <p className="text-[10px] font-bold text-rose-900 uppercase tracking-widest leading-none mb-1">Link Expired</p>
+                  <p className="text-[9px] text-rose-700 leading-normal uppercase font-bold">
+                    Verification tokens expire quickly. Please request a new link below.
                   </p>
                 </div>
              </div>
@@ -105,10 +123,10 @@ const Auth: React.FC = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex gap-3 items-start">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-[10px] sm:text-xs text-amber-900 font-bold leading-relaxed uppercase">
-                    Security Policy: You must verify your email. Elite Inventory uses decentralized protocols; no recovery is possible without a verified identity.
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center text-center">
+                  <ShieldCheck className="w-6 h-6 text-slate-900 mb-2" />
+                  <p className="text-[10px] text-slate-600 font-bold leading-relaxed uppercase tracking-tight max-w-[280px]">
+                    Verify your email to continue. Your identity is your key to all purchased assets.
                   </p>
                 </div>
                 
@@ -117,10 +135,10 @@ const Auth: React.FC = () => {
                     <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-[10px] sm:text-xs text-blue-900 font-bold leading-relaxed uppercase">
-                        Mail Server Issue Detected
+                        Mail Server Latency
                       </p>
                       <p className="text-[9px] text-blue-700 mt-1 leading-normal uppercase">
-                        The "Error sending confirmation mail" is a server-side SMTP issue. Please ensure your Supabase SMTP settings and "Sender Email" are correctly configured.
+                        Please try again in 5 minutes or contact support if the issue persists.
                       </p>
                     </div>
                   </div>
@@ -131,7 +149,7 @@ const Auth: React.FC = () => {
                   <input 
                     type="text" placeholder="Full Name" required
                     value={name} onChange={e => setName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
                   />
                 </div>
               </div>
@@ -142,7 +160,7 @@ const Auth: React.FC = () => {
               <input 
                 type="email" placeholder="Email Address" required
                 value={email} onChange={e => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
               />
             </div>
 
@@ -151,20 +169,20 @@ const Auth: React.FC = () => {
               <input 
                 type="password" placeholder="Password" required
                 value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
               />
             </div>
 
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-50"
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-80"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <LoadingDots color="text-white" />
               ) : (
                 <>
-                  {view === 'login' ? 'Sign In' : 'Create Account'}
+                  {view === 'login' ? 'Authenticate' : 'Begin Deployment'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -176,26 +194,26 @@ const Auth: React.FC = () => {
               <button 
                 onClick={handleResend}
                 disabled={loading}
-                className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest disabled:opacity-30"
+                className="inline-flex items-center gap-2 text-[10px] font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
               >
                 <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
-                Didn't receive email? Resend
+                Resend Verification
               </button>
             </div>
           )}
         </div>
 
-        <p className="text-center mt-8 text-slate-600">
-          {view === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
+        <p className="text-center mt-8 text-slate-500 text-sm font-medium">
+          {view === 'login' ? "New operative?" : "Already verified?"}{' '}
           <button 
             onClick={() => {
               setView(view === 'login' ? 'signup' : 'login');
               setShowResend(false);
               setSmtpError(false);
             }} 
-            className="font-bold text-slate-900 hover:underline"
+            className="font-black text-slate-900 hover:underline tracking-tight"
           >
-            {view === 'login' ? 'Create one now' : 'Sign in instead'}
+            {view === 'login' ? 'Create Account' : 'Sign In'}
           </button>
         </p>
       </div>

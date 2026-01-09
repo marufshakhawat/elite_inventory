@@ -21,6 +21,26 @@
             --tw-ring-color: #0f172a !important; /* slate-900 */
         }
 
+        /* Glowing Dots Loading Effect */
+        @keyframes dotPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 6px currentColor); }
+        }
+        .dot-glowing {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .dot-glowing div {
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 50%;
+            animation: dotPulse 1.4s infinite ease-in-out both;
+        }
+        .dot-glowing div:nth-child(1) { animation-delay: -0.32s; }
+        .dot-glowing div:nth-child(2) { animation-delay: -0.16s; }
+
         /* Shimmer Skeleton Effect */
         @keyframes shimmer {
             0% { background-position: -200% 0; }
@@ -32,10 +52,12 @@
             animation: shimmer 2s infinite linear;
         }
 
-        /* 
-           Crucial for Google Branding Verification:
-           Hides the link from humans but keeps it in the DOM for crawlers.
-        */
+        /* Fade and scale animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-scaleIn { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
         .bot-legal-link {
             position: absolute;
             width: 1px;
@@ -62,7 +84,6 @@
 }
 </script>
 <script>
-  // Shim for process.env to prevent crashes in browser environments
   window.process = { 
     env: { 
       API_KEY: '' 
@@ -71,7 +92,6 @@
 </script>
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <!-- Static HTML Link for Google Verification Bot Discovery -->
     <div class="bot-legal-link">
         <a href="/privacy">Privacy Policy</a>
         <a href="/terms">Terms of Service</a>
@@ -83,14 +103,9 @@
         <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
             <h2>Elite Inventory</h2>
             <p>Please enable JavaScript to access our premium digital marketplace.</p>
-            <nav style="margin-top: 2rem;">
-                <a href="/privacy" style="margin: 0 10px;">Privacy Policy</a>
-                <a href="/terms" style="margin: 0 10px;">Terms of Service</a>
-            </nav>
         </div>
     </noscript>
 
-    <!-- Entry point for the application -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>
