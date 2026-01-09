@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw, Info } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 
 type AuthView = 'login' | 'signup';
@@ -13,6 +13,7 @@ const Auth: React.FC = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
+  const [smtpError, setSmtpError] = useState(false);
   const { login, signup, resendVerification } = useApp();
   const navigate = useNavigate();
 
@@ -20,23 +21,28 @@ const Auth: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setShowResend(false);
+    setSmtpError(false);
     
-    let success = false;
     if (view === 'login') {
-      success = await login(email, password);
+      const success = await login(email, password);
       if (success) {
         navigate('/dashboard');
       } else {
-        // If login fails, check if we should show the resend link (usually for unconfirmed emails)
         setShowResend(true);
       }
     } else if (view === 'signup') {
-      success = await signup(email, password, name);
-      if (success) {
-        setView('login');
-        // Keep email filled so they can resend if needed
-        setPassword('');
-        setShowResend(true);
+      try {
+        const success = await signup(email, password, name);
+        if (success) {
+          setView('login');
+          setPassword('');
+          setShowResend(true);
+        }
+      } catch (err: any) {
+        const msg = err.message?.toLowerCase() || '';
+        if (msg.includes('error sending') || msg.includes('smtp')) {
+          setSmtpError(true);
+        }
       }
     }
 
@@ -81,6 +87,21 @@ const Auth: React.FC = () => {
                     Security Policy: You must verify your email. Elite Inventory uses decentralized protocols; no recovery is possible without a verified identity.
                   </p>
                 </div>
+                
+                {smtpError && (
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex gap-3 items-start">
+                    <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] sm:text-xs text-blue-900 font-bold leading-relaxed uppercase">
+                        Mail Server Issue Detected
+                      </p>
+                      <p className="text-[9px] text-blue-700 mt-1 leading-normal uppercase">
+                        The "Error sending confirmation mail" is a server-side SMTP issue. Please ensure your Supabase SMTP settings and "Sender Email" are correctly configured.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                   <input 
@@ -146,6 +167,7 @@ const Auth: React.FC = () => {
             onClick={() => {
               setView(view === 'login' ? 'signup' : 'login');
               setShowResend(false);
+              setSmtpError(false);
             }} 
             className="font-bold text-slate-900 hover:underline"
           >
