@@ -1,22 +1,23 @@
+
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AppProvider, useApp } from './store/AppContext';
+import { AppProvider, useApp } from './store/AppContext.tsx';
 import { CheckCircle, Info, X, ChevronUp, Loader2 } from 'lucide-react';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Shop from './pages/Shop';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Auth from './pages/Auth';
-import Dashboard from './pages/Dashboard';
-import Admin from './pages/Admin';
-import Wishlist from './pages/Wishlist';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Legal from './pages/Legal';
-import Chatbot from './components/Chatbot';
+import Navbar from './components/Navbar.tsx';
+import Footer from './components/Footer.tsx';
+import Home from './pages/Home.tsx';
+import Shop from './pages/Shop.tsx';
+import ProductDetail from './pages/ProductDetail.tsx';
+import Cart from './pages/Cart.tsx';
+import Checkout from './pages/Checkout.tsx';
+import Auth from './pages/Auth.tsx';
+import Dashboard from './pages/Dashboard.tsx';
+import Admin from './pages/Admin.tsx';
+import Wishlist from './pages/Wishlist.tsx';
+import About from './pages/About.tsx';
+import Contact from './pages/Contact.tsx';
+import Legal from './pages/Legal.tsx';
+import Chatbot from './components/Chatbot.tsx';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
