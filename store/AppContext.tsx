@@ -72,34 +72,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     const initialize = async () => {
       try {
+        // Essential: Check for existing session to prevent logout on refresh
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
           setIsAuth(true);
+          await fetchUserProfile(session.user.id);
         }
 
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select('*');
+        const [productsRes, settingsRes] = await Promise.all([
+          supabase.from('products').select('*'),
+          supabase.from('settings').select('*').eq('key', 'global').single()
+        ]);
         
-        if (productsError) {
-          setProducts(INITIAL_PRODUCTS);
-        } else if (productsData && productsData.length > 0) {
-          setProducts(productsData);
-        } else {
-          setProducts(INITIAL_PRODUCTS);
-        }
+        if (productsRes.data && productsRes.data.length > 0) setProducts(productsRes.data);
+        else setProducts(INITIAL_PRODUCTS);
 
-        const { data: settingsData } = await supabase
-          .from('settings')
-          .select('*')
-          .eq('key', 'global')
-          .single();
-        
-        if (settingsData?.value) {
-          setSettings(settingsData.value);
-        }
+        if (settingsRes.data?.value) setSettings(settingsRes.data.value);
 
       } catch (err: any) {
         setProducts(INITIAL_PRODUCTS);
@@ -112,8 +101,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
-        await fetchUserProfile(session.user.id);
         setIsAuth(true);
+        await fetchUserProfile(session.user.id);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAuth(false);
@@ -140,7 +129,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const fetchOrders = async (userId: string, isAdmin: boolean) => {
     const query = supabase.from('orders').select('*').order('date', { ascending: false });
     if (!isAdmin) query.eq('userId', userId);
-    
     const { data } = await query;
     if (data) setOrders(data);
   };
@@ -218,11 +206,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const { data, error } = await supabase.auth.signUp({ 
       email, 
       password: pass,
-      options: { data: { full_name: name }, emailRedirectTo: window.location.origin + '/dashboard' }
+      options: { 
+        data: { full_name: name }, 
+        emailRedirectTo: window.location.origin + '/dashboard' 
+      }
     });
     
     if (error) {
-      if (error.message.toLowerCase().includes('already registered')) {
+      // Catch existing users and redirect to login
+      if (error.message.toLowerCase().includes('already registered') || error.status === 400) {
         window.location.href = `/login?registered=true`;
       } else {
         addToast(error.message, 'error');
@@ -230,7 +222,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     if (data.user) {
-      addToast('Success! Check your email to verify your account.', 'success');
+      addToast('Verification email sent. Check your inbox!', 'success');
     }
     return true;
   };

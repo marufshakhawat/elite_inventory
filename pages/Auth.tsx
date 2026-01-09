@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, User, ShieldCheck, ArrowRight, Loader2, Info } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 
 type AuthView = 'login' | 'signup';
@@ -15,10 +15,11 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
   const { login, signup, isAuth, user } = useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const alreadyMember = searchParams.get('registered') === 'true';
+  const alreadyRegistered = searchParams.get('registered') === 'true';
 
   useEffect(() => {
     if (isAuth && user) {
+      // User is authenticated, send to dashboard (defaults to purchases)
       navigate('/dashboard', { replace: true });
     }
   }, [isAuth, user, navigate]);
@@ -32,9 +33,8 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
       if (success) navigate('/dashboard');
     } else {
       const success = await signup(email, password, name);
-      if (success) {
-        // AppContext adds a toast, just stay here to let them read it
-      }
+      // If signup is successful, AppContext handles the toast.
+      // If user exists, AppContext handles the redirect to ?registered=true
     }
     setLoading(false);
   };
@@ -46,14 +46,16 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
           <Link to="/" className="inline-block mb-6">
             <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[180px] h-auto mx-auto" />
           </Link>
-          <h2 className="text-3xl font-bold text-slate-900">{view === 'login' ? 'Welcome Back' : 'Join Us'}</h2>
-          <p className="text-slate-500 mt-2">{view === 'login' ? 'Sign in to access your products.' : 'Create an account to get started.'}</p>
+          <h2 className="text-3xl font-bold text-slate-900">{view === 'login' ? 'Login' : 'Register'}</h2>
+          <p className="text-slate-500 mt-2">{view === 'login' ? 'Access your premium assets.' : 'Join the elite marketplace.'}</p>
         </div>
 
-        {alreadyMember && view === 'login' && (
-          <div className="mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex gap-3 items-center animate-fadeIn">
-            <Info className="w-5 h-5 text-indigo-600 shrink-0" />
-            <p className="text-xs text-indigo-700 font-semibold">Account already exists. Please sign in below.</p>
+        {alreadyRegistered && view === 'login' && (
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3 items-center animate-fadeIn">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <p className="text-xs text-amber-800 font-semibold leading-tight">
+              An account already exists with this email. Please sign in.
+            </p>
           </div>
         )}
 
@@ -97,7 +99,7 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  {view === 'login' ? 'Sign In' : 'Sign Up'}
+                  {view === 'login' ? 'Sign In' : 'Create Account'}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </>
               )}
@@ -106,12 +108,12 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
         </div>
 
         <p className="text-center mt-8 text-slate-600 font-medium">
-          {view === 'login' ? "New here?" : "Already have an account?"}{' '}
+          {view === 'login' ? "New member?" : "Already verified?"}{' '}
           <button 
             onClick={() => setView(view === 'login' ? 'signup' : 'login')} 
             className="font-bold text-slate-900 hover:underline"
           >
-            {view === 'login' ? 'Create Account' : 'Login Instead'}
+            {view === 'login' ? 'Register' : 'Login'}
           </button>
         </p>
       </div>

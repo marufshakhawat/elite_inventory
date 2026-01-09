@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, ShieldCheck, Globe, Cpu, Play, Terminal, Box, Shield } from 'lucide-react';
+import { ArrowRight, Zap, ShieldCheck, Globe, Cpu, Play, Box } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import ProductCard from '../components/ProductCard';
 
@@ -27,7 +27,7 @@ const Home: React.FC = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [featuredProducts]); // Re-observe if featured list changes
 
   const addToRefs = (el: HTMLDivElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
@@ -49,7 +49,7 @@ const Home: React.FC = () => {
           <div className="max-w-2xl space-y-6 animate-fadeIn">
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
               <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400">
-                Premium Marketplace
+                Premium Store
               </span>
             </div>
             
@@ -59,12 +59,12 @@ const Home: React.FC = () => {
             </h1>
             
             <p className="text-lg text-slate-400 font-light leading-relaxed">
-              Official license keys and premium subscriptions delivered instantly to your dashboard.
+              Official license keys and premium subscriptions delivered instantly.
             </p>
             
             <div className="pt-4">
               <Link to="/shop" className="group relative inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-white bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest">
-                Start Browsing <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                Explore Products <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
@@ -75,10 +75,10 @@ const Home: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 -mt-12 relative z-20 reveal" ref={addToRefs}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 bg-white rounded-[2rem] border border-slate-100 shadow-xl px-10">
           {[
-            { icon: Zap, title: 'Instant Delivery', desc: 'Auto-fulfillment' },
+            { icon: Zap, title: 'Instant Delivery', desc: 'Automatic access' },
             { icon: ShieldCheck, title: 'Genuine Keys', desc: '100% Verified' },
-            { icon: Globe, title: 'No Limits', desc: 'Global access' },
-            { icon: Box, title: 'Full Support', desc: '24/7 coverage' },
+            { icon: Globe, title: 'Global Use', desc: 'Access everywhere' },
+            { icon: Box, title: 'Full Support', desc: '24/7 help' },
           ].map((feat, idx) => (
             <div key={idx} className="flex flex-col items-center text-center space-y-2">
               <feat.icon className="w-5 h-5 text-slate-900 mb-1" />
@@ -94,7 +94,7 @@ const Home: React.FC = () => {
         <div className="flex justify-between items-end mb-10">
           <div className="space-y-1">
             <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Popular Products</h2>
-            <p className="text-sm text-slate-400">Hand-picked premium essentials.</p>
+            <p className="text-sm text-slate-400">Curated premium items.</p>
           </div>
           <Link to="/shop" className="text-xs font-bold text-slate-900 uppercase tracking-widest border-b-2 border-slate-900 pb-1">
             View All
@@ -116,9 +116,9 @@ const Home: React.FC = () => {
             </div>
             <div className="relative z-20 space-y-3">
               <h3 className="text-3xl font-bold text-white">Software</h3>
-              <p className="text-sm text-slate-400 max-w-xs font-light">Pro tools for professional workflows.</p>
+              <p className="text-sm text-slate-400 max-w-xs font-light">Tools for professionals.</p>
               <Link to="/shop?category=Software & Apps" className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest mt-2">
-                Explore <ArrowRight className="w-4 h-4" />
+                Browse <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -129,9 +129,9 @@ const Home: React.FC = () => {
             </div>
             <div className="relative z-20 space-y-3">
               <h3 className="text-3xl font-bold text-white">Streaming</h3>
-              <p className="text-sm text-slate-400 max-w-xs font-light">Premium entertainment, anywhere.</p>
+              <p className="text-sm text-slate-400 max-w-xs font-light">Premium entertainment.</p>
               <Link to="/shop?category=Streaming Platform" className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest mt-2">
-                Explore <ArrowRight className="w-4 h-4" />
+                Browse <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -143,9 +143,9 @@ const Home: React.FC = () => {
         <div className="bg-[#020617] rounded-[2.5rem] py-14 px-10 text-center text-white border border-white/5 shadow-2xl">
           <div className="max-w-xl mx-auto space-y-8">
             <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tight">Get Updates.</h2>
+              <h2 className="text-3xl font-bold tracking-tight">Stay Updated</h2>
               <p className="text-slate-400 text-sm font-light leading-relaxed">
-                Receive notifications when high-demand assets are back in stock.
+                Get notified when products are back in stock.
               </p>
             </div>
             
@@ -156,7 +156,7 @@ const Home: React.FC = () => {
                 className="flex-[2] px-6 py-4 rounded-full bg-white/5 border border-white/10 text-white text-sm outline-none focus:ring-1 focus:ring-slate-500"
               />
               <button className="flex-1 bg-white text-slate-900 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest">
-                Join Now
+                Join
               </button>
             </form>
           </div>
