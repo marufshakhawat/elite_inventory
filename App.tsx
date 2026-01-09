@@ -17,6 +17,7 @@ import Wishlist from './pages/Wishlist.tsx';
 import About from './pages/About.tsx';
 import Contact from './pages/Contact.tsx';
 import Legal from './pages/Legal.tsx';
+import NotFound from './pages/NotFound.tsx';
 
 export const LoadingDots: React.FC<{ color?: string, size?: string }> = ({ color = 'text-slate-900', size = '' }) => (
   <div className="flex items-center justify-center gap-1.5 py-4">
@@ -200,7 +201,7 @@ const AppContent: React.FC = () => {
             path="/admin" 
             element={<ProtectedRoute adminOnly={true}><Admin /></ProtectedRoute>} 
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />
