@@ -1,11 +1,11 @@
 
 import React, { useState, useRef } from 'react';
-import { User as UserIcon, Package, Settings, MapPin, CreditCard, LogOut, ChevronRight, Key, Mail, Shield, CheckCircle2, Clock, Copy, ExternalLink, Smartphone, Camera, X, Lock, Fingerprint, AlertTriangle, Phone, Loader2 } from 'lucide-react';
+import { User as UserIcon, Package, Settings, MapPin, CreditCard, LogOut, ChevronRight, Key, Mail, Shield, CheckCircle2, Clock, Copy, ExternalLink, Smartphone, Camera, X, Lock, AlertTriangle, Phone, Loader2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 type DashboardTab = 'info' | 'purchases' | 'history' | 'settings';
-type ActiveModal = 'password' | '2fa' | 'deactivate' | null;
+type ActiveModal = 'password' | 'deactivate' | null;
 
 const Dashboard: React.FC = () => {
   const { user, logout, orders, updateUser, addToast, updatePassword } = useApp();
@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeactivate = () => {
-    addToast('Account deactivated successfully', 'info');
+    addToast('Account deactivation requested', 'info');
     logout();
     navigate('/');
   };
@@ -371,35 +371,19 @@ const Dashboard: React.FC = () => {
                       </button>
                     </div>
 
-                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
+                    <div className="p-6 bg-red-50 rounded-3xl border border-red-100 space-y-4">
                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100">
-                        <Smartphone className="w-5 h-5 text-slate-900" />
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
                       </div>
-                      <h4 className="font-bold text-slate-900">Security Verification</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed">Add secondary verification for extra protection of your digital assets.</p>
+                      <h4 className="font-bold text-red-900">Danger Zone</h4>
+                      <p className="text-xs text-red-700 leading-relaxed">Permanently close your account and remove access to all purchases.</p>
                       <button 
-                        onClick={() => setActiveModal('2fa')}
-                        className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
+                        onClick={() => setActiveModal('deactivate')}
+                        className="w-full py-3 bg-red-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm"
                       >
-                        Enable 2FA
+                        Deactivate Account
                       </button>
                     </div>
-                  </div>
-                </div>
-
-                <div className="pt-8 border-t border-slate-100">
-                  <h4 className="text-xs font-bold text-red-500 uppercase tracking-widest mb-4">Danger Zone</h4>
-                  <div className="p-6 bg-red-50 rounded-3xl border border-red-100 flex items-center justify-between gap-6">
-                    <div>
-                      <h5 className="font-bold text-red-900">Deactivate Account</h5>
-                      <p className="text-xs text-red-700 mt-1">Permanently close your account and remove access to all purchases.</p>
-                    </div>
-                    <button 
-                      onClick={() => setActiveModal('deactivate')}
-                      className="px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-all whitespace-nowrap"
-                    >
-                      Deactivate
-                    </button>
                   </div>
                 </div>
               </div>
@@ -448,42 +432,6 @@ const Dashboard: React.FC = () => {
                 {modalLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Credentials'}
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {activeModal === '2fa' && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-100 rounded-xl text-slate-900"><Fingerprint className="w-5 h-5" /></div>
-                <h3 className="text-xl font-bold tracking-tight">Two-Factor Authentication</h3>
-              </div>
-              <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-slate-50 rounded-full transition-all"><X className="w-6 h-6 text-slate-400" /></button>
-            </div>
-            <div className="p-8 text-center space-y-8">
-              <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 inline-block">
-                {/* Fake QR Code */}
-                <div className="w-32 h-32 bg-slate-900 rounded-lg flex flex-wrap p-1">
-                  {Array.from({ length: 144 }).map((_, i) => (
-                    <div key={i} className={`w-1/12 h-1/12 ${Math.random() > 0.5 ? 'bg-white' : 'bg-transparent'}`} />
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-slate-900">Scan QR Code</p>
-                <p className="text-xs text-slate-500 leading-relaxed px-4">Use Google Authenticator or Authy to scan the code above and enter the verification digits.</p>
-              </div>
-              <div className="flex gap-2 justify-center">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <input key={i} type="text" maxLength={1} className="w-10 h-12 bg-slate-50 border border-slate-100 rounded-xl text-center font-bold text-lg focus:ring-2 focus:ring-slate-900 transition-all outline-none" />
-                ))}
-              </div>
-              <button onClick={() => { setActiveModal(null); addToast('2FA protection enabled', 'success'); }} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all uppercase text-xs tracking-widest shadow-lg">
-                Verify & Activate
-              </button>
-            </div>
           </div>
         </div>
       )}

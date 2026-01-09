@@ -28,6 +28,7 @@ interface AppContextType {
   toggleWishlist: (productId: string) => void;
   login: (email: string, pass: string) => Promise<boolean>;
   signup: (email: string, pass: string, name: string) => Promise<boolean>;
+  resendVerification: (email: string) => Promise<void>;
   updatePassword: (newPass: string) => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
@@ -227,7 +228,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const login = async (email: string, pass: string): Promise<boolean> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error) {
-      addToast(error.message, 'error');
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        addToast('Verification pending. Please check your inbox.', 'error');
+      } else {
+        addToast(error.message, 'error');
+      }
       return false;
     }
     return true;
@@ -245,9 +250,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     if (data.user) {
-      addToast('Welcome to Elite Inventory!', 'success');
+      addToast('Check your email to verify your account.', 'info');
     }
     return true;
+  };
+
+  const resendVerification = async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+    });
+    if (error) {
+      addToast(error.message, 'error');
+    } else {
+      addToast('A new verification email has been sent.', 'success');
+    }
   };
 
   const updatePassword = async (newPass: string): Promise<boolean> => {
@@ -256,7 +273,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
       return false;
     }
-    addToast('Password updated successfully', 'success');
+    addToast('Password update email sent. Check your inbox.', 'success');
     return true;
   };
 
@@ -267,15 +284,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const updateUser = async (userData: Partial<User>) => {
     if (!user) return;
+    
+    // SECURITY: Strictly filter fields to prevent users from changing their own role/status
+    const allowedUpdates = {
+      name: userData.name,
+      phone: userData.phone,
+      avatar: userData.avatar,
+      address: userData.address
+    };
+
     const { error } = await supabase
       .from('profiles')
-      .update(userData)
+      .update(allowedUpdates)
       .eq('id', user.id);
     
     if (error) {
       addToast(error.message, 'error');
     } else {
-      setUser({ ...user, ...userData });
+      setUser({ ...user, ...allowedUpdates });
       addToast('Identity updated');
     }
   };
@@ -372,7 +398,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     <AppContext.Provider value={{
       products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
-      login, signup, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
+      login, signup, resendVerification, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
       fulfillOrder, updateSettings, addToast, removeToast, setChatOpen
     }}>
       {children}

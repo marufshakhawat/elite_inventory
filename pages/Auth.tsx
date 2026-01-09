@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 
 type AuthView = 'login' | 'signup';
@@ -12,22 +12,41 @@ const Auth: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, signup } = useApp();
+  const [showResend, setShowResend] = useState(false);
+  const { login, signup, resendVerification } = useApp();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setShowResend(false);
     
     let success = false;
     if (view === 'login') {
       success = await login(email, password);
-      if (success) navigate('/dashboard');
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        // If login fails, check if we should show the resend link (usually for unconfirmed emails)
+        setShowResend(true);
+      }
     } else if (view === 'signup') {
       success = await signup(email, password, name);
-      if (success) navigate('/dashboard');
+      if (success) {
+        setView('login');
+        // Keep email filled so they can resend if needed
+        setPassword('');
+        setShowResend(true);
+      }
     }
 
+    setLoading(false);
+  };
+
+  const handleResend = async () => {
+    if (!email) return;
+    setLoading(true);
+    await resendVerification(email);
     setLoading(false);
   };
 
@@ -56,11 +75,10 @@ const Auth: React.FC = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
-                {/* Critical Security Warning */}
                 <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex gap-3 items-start">
                   <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-[10px] sm:text-xs text-amber-900 font-bold leading-relaxed uppercase">
-                    Security Policy: Please remember your password carefully. Elite Inventory uses decentralized protocols; there is no password reset option after account creation.
+                    Security Policy: You must verify your email. Elite Inventory uses decentralized protocols; no recovery is possible without a verified identity.
                   </p>
                 </div>
                 <div className="relative">
@@ -107,12 +125,28 @@ const Auth: React.FC = () => {
               )}
             </button>
           </form>
+
+          {showResend && (
+            <div className="mt-6 text-center animate-fadeIn">
+              <button 
+                onClick={handleResend}
+                disabled={loading || !email}
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest disabled:opacity-30"
+              >
+                <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+                Didn't receive email? Resend
+              </button>
+            </div>
+          )}
         </div>
 
         <p className="text-center mt-8 text-slate-600">
           {view === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
           <button 
-            onClick={() => setView(view === 'login' ? 'signup' : 'login')} 
+            onClick={() => {
+              setView(view === 'login' ? 'signup' : 'login');
+              setShowResend(false);
+            }} 
             className="font-bold text-slate-900 hover:underline"
           >
             {view === 'login' ? 'Create one now' : 'Sign in instead'}
