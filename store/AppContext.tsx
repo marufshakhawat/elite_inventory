@@ -69,21 +69,49 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const fetchProfileAndOrders = async (userId: string) => {
     try {
-      const { data: profile, error: profileError } = await supabase
+      let { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
       
-      if (profileError) throw profileError;
+      // If profile is missing (common trigger failure on signup), attempt to repair/create it
+      if (profileError || !profile) {
+        console.warn('Profile missing or inaccessible. Attempting auto-repair...');
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        
+        if (authUser) {
+          const newProfile = {
+            id: authUser.id,
+            name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || 'Valued Customer',
+            email: authUser.email,
+            role: 'user',
+            status: 'active'
+          };
 
-      if (profile.status === 'deactivated' || profile.status === 'suspended') {
+          const { data: createdProfile, error: createError } = await supabase
+            .from('profiles')
+            .upsert([newProfile])
+            .select()
+            .single();
+
+          if (createError) {
+             console.error('Auto-repair failed:', createError);
+             // If we still can't create it, we use a fallback guest-style object to not break the UI
+             profile = newProfile as any;
+          } else {
+             profile = createdProfile;
+          }
+        }
+      }
+
+      if (profile && (profile.status === 'deactivated' || profile.status === 'suspended')) {
         await logout();
-        addToast('This account has been deactivated.', 'error');
+        addToast('This account has been restricted.', 'error');
         return;
       }
 
-      const isAdmin = profile.role === 'admin';
+      const isAdmin = profile?.role === 'admin';
       const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
       if (!isAdmin) orderQuery.eq('userId', userId);
       
@@ -213,11 +241,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const signup = async (email: string, pass: string, name: string) => {
+    // We send both full_name and name to satisfy various possible trigger configurations
     const { data, error } = await supabase.auth.signUp({ 
       email, 
       password: pass,
       options: { 
-        data: { full_name: name }, 
+        data: { 
+          full_name: name,
+          name: name
+        }, 
         emailRedirectTo: window.location.origin + '/'
       }
     });
