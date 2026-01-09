@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, User, AlertTriangle, RefreshCw, Timer, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertTriangle, RefreshCw, Info, Timer, ShieldCheck } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { LoadingDots } from '../App';
 
@@ -25,6 +25,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   const { login, signup, resendVerification, isAuth, isLoading, user } = useApp();
   const navigate = useNavigate();
 
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuth && !isLoading && user) {
       const destination = user.role === 'admin' ? '/admin' : '/dashboard';
@@ -47,6 +48,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     if (view === 'login') {
       const success = await login(email, password);
       if (!success) {
+        // If login fails, offer resend in case it was a verification issue
         setShowResend(true);
         setLoading(false);
       }
@@ -82,9 +84,10 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     setLoading(false);
   };
 
-  const getTitle = () => (view === 'login' ? 'Login' : 'Sign Up');
-  const getSubtitle = () => (view === 'login' ? 'Enter your credentials to access your account.' : 'Create an account to start shopping.');
+  const getTitle = () => (view === 'login' ? 'Welcome Back' : 'Create Account');
+  const getSubtitle = () => (view === 'login' ? 'Log in to access your secure inventory.' : 'Join the elite marketplace.');
 
+  // Refined visibility logic
   if (isLoading && isAuth) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <LoadingDots />
@@ -96,9 +99,9 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <Link to="/" className="inline-block mb-6">
-            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[180px] h-auto mx-auto" />
+            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[200px] h-auto mx-auto" />
           </Link>
-          <h2 className="text-3xl font-semibold text-slate-900 tracking-tight">{getTitle()}</h2>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{getTitle()}</h2>
           <p className="text-slate-500 mt-2 font-medium">{getSubtitle()}</p>
         </div>
 
@@ -106,7 +109,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           {isLinkExpired && (
              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3 items-start animate-fadeIn">
                 <Timer className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-rose-700 leading-normal uppercase font-semibold">
+                <p className="text-[9px] text-rose-700 leading-normal uppercase font-bold">
                   Verification link expired. Request a new one below.
                 </p>
              </div>
@@ -115,10 +118,11 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
+                {/* SMALL, CENTERED, SIMPLE SECURITY POLICY */}
                 <div className="flex flex-col items-center text-center px-4">
                   <ShieldCheck className="w-5 h-5 text-slate-900 mb-2" />
-                  <p className="text-[10px] text-slate-500 font-semibold leading-relaxed uppercase tracking-tight max-w-[240px]">
-                    Verify your email to secure your purchases.
+                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-tight max-w-[240px]">
+                    Verify your email to keep your account safe. No verification means no access.
                   </p>
                 </div>
                 
@@ -127,7 +131,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
                   <input 
                     type="text" placeholder="Full Name" required
                     value={name} onChange={e => setName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
                   />
                 </div>
               </div>
@@ -138,7 +142,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
               <input 
                 type="email" placeholder="Email Address" required
                 value={email} onChange={e => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
               />
             </div>
 
@@ -147,30 +151,35 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
               <input 
                 type="password" placeholder="Password" required
                 value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm"
               />
             </div>
 
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg shadow-slate-100 disabled:opacity-80 min-h-[56px] uppercase tracking-widest text-sm"
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-80 min-h-[56px]"
             >
-              {loading ? <LoadingDots color="text-white" /> : (view === 'login' ? 'Login' : 'Sign Up')}
+              {loading ? <LoadingDots color="text-white" /> : (
+                <>
+                  {view === 'login' ? 'Authenticate' : 'Begin Deployment'}
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </form>
 
           {(showResend || smtpStatus === 'sent') && (
             <div className="mt-6 text-center animate-fadeIn">
               <div className="p-3 bg-slate-50 rounded-xl mb-4">
-                <p className="text-[9px] text-slate-500 font-semibold uppercase tracking-widest leading-relaxed">
-                  {smtpStatus === 'sent' ? 'Verification Sent!' : 'Missing verification?'}
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                  {smtpStatus === 'sent' ? 'Verification Sent! Check your Inbox & Spam folders.' : 'Missing verification?'}
                 </p>
               </div>
               <button 
                 onClick={handleResend}
                 disabled={loading}
-                className="inline-flex items-center gap-2 text-[10px] font-semibold text-slate-900 hover:opacity-70 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
+                className="inline-flex items-center gap-2 text-[10px] font-black text-slate-900 hover:opacity-70 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
               >
                 {loading ? <LoadingDots size="w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
                 Resend Confirmation
@@ -180,16 +189,16 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
         </div>
 
         <p className="text-center mt-8 text-slate-500 text-sm font-medium">
-          {view === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
+          {view === 'login' ? "New operative?" : "Already verified?"}{' '}
           <button 
             onClick={() => {
               setView(view === 'login' ? 'signup' : 'login');
               setShowResend(false);
               setSmtpStatus('idle');
             }} 
-            className="font-semibold text-slate-900 hover:underline tracking-tight"
+            className="font-black text-slate-900 hover:underline tracking-tight"
           >
-            {view === 'login' ? 'Register Now' : 'Login Now'}
+            {view === 'login' ? 'Create Account' : 'Sign In'}
           </button>
         </p>
       </div>

@@ -104,9 +104,9 @@ const Dashboard: React.FC = () => {
               </div>
               <input type="file" ref={photoInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 tracking-tight">{user?.name}</h3>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">{user?.name}</h3>
             <p className="text-slate-500 text-sm mb-6 font-medium">{user?.email}</p>
-            <button onClick={logout} className="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 text-slate-900 rounded-xl font-semibold hover:bg-slate-100 border border-slate-100 transition-colors text-[10px] uppercase tracking-widest">
+            <button onClick={logout} className="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 text-slate-900 rounded-xl font-bold hover:bg-slate-100 border border-slate-100 transition-colors text-[10px] uppercase tracking-widest">
               <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>
@@ -126,7 +126,7 @@ const Dashboard: React.FC = () => {
                 }`}
               >
                 <item.icon className="w-5 h-5" />
-                <span className="font-semibold text-sm tracking-tight">{item.label}</span>
+                <span className="font-bold text-sm tracking-tight">{item.label}</span>
                 {activeTab === item.id && <ChevronRight className="ml-auto w-4 h-4 opacity-50" />}
               </button>
             ))}
@@ -144,8 +144,8 @@ const Dashboard: React.FC = () => {
             ].map((stat, idx) => (
               <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1">{stat.label}</p>
-                  <p className="text-2xl font-semibold text-slate-900 tracking-tight">{stat.value}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">{stat.label}</p>
+                  <p className="text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</p>
                 </div>
                 <stat.icon className="w-8 h-8 text-slate-100" />
               </div>
@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
             {activeTab === 'info' && (
               <div className="p-8 md:p-12 space-y-8 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Identity</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Identity</h2>
                   <p className="text-sm text-slate-500 mt-1 font-medium">Manage your personal details and delivery address.</p>
                 </div>
                 
@@ -173,12 +173,12 @@ const Dashboard: React.FC = () => {
                         <Camera className="w-8 h-8 text-white drop-shadow-md" />
                       </div>
                     </div>
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Click to update</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Click to update</p>
                   </div>
 
                   <form onSubmit={handleProfileUpdate} className="flex-1 space-y-6 max-w-xl">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                       <div className="relative">
                         <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                         <input 
@@ -186,24 +186,24 @@ const Dashboard: React.FC = () => {
                           placeholder="Full Name"
                           value={profileForm.name}
                           onChange={e => setProfileForm({...profileForm, name: e.target.value})}
-                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-semibold" 
+                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-bold" 
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                       <div className="relative">
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                         <input 
                           type="email" 
                           disabled
                           value={profileForm.email}
-                          className="w-full pl-12 pr-4 py-4 bg-slate-100 border border-slate-100 rounded-2xl outline-none text-sm font-semibold text-slate-500 cursor-not-allowed" 
+                          className="w-full pl-12 pr-4 py-4 bg-slate-100 border border-slate-100 rounded-2xl outline-none text-sm font-bold text-slate-500 cursor-not-allowed" 
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                       <div className="relative">
                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                         <input 
@@ -211,23 +211,23 @@ const Dashboard: React.FC = () => {
                           placeholder="+880 1XXX-XXXXXX"
                           value={profileForm.phone}
                           onChange={e => setProfileForm({...profileForm, phone: e.target.value})}
-                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-semibold" 
+                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-bold" 
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Shipping Address</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Shipping Address</label>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-5 w-4 h-4 text-slate-300" />
                         <textarea 
                           rows={3}
                           value={profileForm.address}
                           onChange={e => setProfileForm({...profileForm, address: e.target.value})}
-                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-semibold"
+                          className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-bold"
                         ></textarea>
                       </div>
                     </div>
-                    <button type="submit" className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all text-[10px] uppercase tracking-[0.2em] shadow-lg">
+                    <button type="submit" className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all text-[10px] uppercase tracking-[0.2em] shadow-lg">
                       Update Profile
                     </button>
                   </form>
@@ -239,10 +239,10 @@ const Dashboard: React.FC = () => {
               <div className="p-8 md:p-12 space-y-8 animate-fadeIn">
                 <div className="flex justify-between items-end">
                   <div>
-                    <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Products</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Products</h2>
                     <p className="text-sm text-slate-500 mt-1 font-medium">Access your purchased professional digital assets.</p>
                   </div>
-                  <Link to="/shop" className="text-[10px] font-semibold text-slate-900 uppercase tracking-[0.2em] border-b-2 border-slate-900 pb-1">Buy More</Link>
+                  <Link to="/shop" className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] border-b-2 border-slate-900 pb-1">Buy More</Link>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-4">
@@ -256,18 +256,18 @@ const Dashboard: React.FC = () => {
                               <img src={item.image} className="w-full h-full object-contain" alt={item.name} />
                             </div>
                             <div>
-                              <h4 className="font-semibold text-slate-900 tracking-tight">{item.name}</h4>
+                              <h4 className="font-bold text-slate-900 tracking-tight">{item.name}</h4>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase bg-green-100 text-green-700">Delivered</span>
-                                <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Date: {new Date(o.date).toLocaleDateString()}</span>
+                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase bg-green-100 text-green-700">Delivered</span>
+                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Date: {new Date(o.date).toLocaleDateString()}</span>
                               </div>
                             </div>
                           </div>
                           
                           <div className="flex-1 max-w-md">
-                            <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Asset Fulfillment Data</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Asset Fulfillment Data</p>
                             <div className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-4 font-mono text-[10px]">
-                               <span className="text-slate-700 truncate font-semibold">{fulfillmentValue}</span>
+                               <span className="text-slate-700 truncate font-bold">{fulfillmentValue}</span>
                                <button 
                                 onClick={() => copyToClipboard(fulfillmentValue)}
                                 className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 hover:text-slate-900 transition-all"
@@ -296,7 +296,7 @@ const Dashboard: React.FC = () => {
                     <div className="py-20 text-center space-y-4">
                       <Key className="w-12 h-12 text-slate-200 mx-auto" />
                       <p className="text-slate-400 text-sm italic font-medium">You haven't purchased any products yet.</p>
-                      <Link to="/shop" className="inline-block bg-slate-50 text-slate-900 px-6 py-3 rounded-full text-[10px] font-semibold uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all">Explore Marketplace</Link>
+                      <Link to="/shop" className="inline-block bg-slate-50 text-slate-900 px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all">Explore Marketplace</Link>
                     </div>
                   )}
                 </div>
@@ -306,13 +306,13 @@ const Dashboard: React.FC = () => {
             {activeTab === 'history' && (
               <div className="p-8 md:p-12 space-y-8 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Transaction History</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Transaction History</h2>
                 </div>
 
                 <div className="overflow-hidden border border-slate-100 rounded-[2rem]">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
+                      <tr className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                         <th className="px-8 py-5">Order ID</th>
                         <th className="px-8 py-5">Date</th>
                         <th className="px-8 py-5">Payment</th>
@@ -324,24 +324,24 @@ const Dashboard: React.FC = () => {
                       {orders.length > 0 ? orders.map(o => (
                         <tr key={o.id} className="hover:bg-slate-50 transition-colors">
                           <td className="px-8 py-6">
-                            <span className="font-mono text-[10px] font-semibold text-slate-900 select-all uppercase">{o.id}</span>
+                            <span className="font-mono text-[10px] font-bold text-slate-900 select-all uppercase">{o.id}</span>
                           </td>
                           <td className="px-8 py-6 text-sm text-slate-500 font-medium">{new Date(o.date).toLocaleDateString()}</td>
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-2">
                               <Smartphone className="w-3.5 h-3.5 text-slate-300" />
-                              <span className="text-[10px] font-semibold text-slate-700 uppercase">{o.paymentMethod || 'Manual'}</span>
+                              <span className="text-[10px] font-bold text-slate-700 uppercase">{o.paymentMethod || 'Manual'}</span>
                             </div>
                           </td>
                           <td className="px-8 py-6">
                              <div className="flex items-center gap-2">
                                {o.status === 'delivered' ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Clock className="w-3.5 h-3.5 text-amber-500" />}
-                               <span className={`text-[10px] font-semibold uppercase tracking-wider ${o.status === 'delivered' ? 'text-green-600' : 'text-amber-600'}`}>
+                               <span className={`text-[10px] font-bold uppercase tracking-wider ${o.status === 'delivered' ? 'text-green-600' : 'text-amber-600'}`}>
                                  {o.status}
                                </span>
                              </div>
                           </td>
-                          <td className="px-8 py-6 text-right font-semibold text-slate-900 tracking-tight">৳{o.total.toLocaleString()}</td>
+                          <td className="px-8 py-6 text-right font-bold text-slate-900 tracking-tight">৳{o.total.toLocaleString()}</td>
                         </tr>
                       )) : (
                         <tr>
@@ -358,7 +358,7 @@ const Dashboard: React.FC = () => {
               <div className="p-8 md:p-12 space-y-12 animate-fadeIn">
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Security & Settings</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Security & Settings</h2>
                     <p className="text-sm text-slate-500 mt-1 font-medium">Manage your account security and authentication.</p>
                   </div>
                   
@@ -367,11 +367,11 @@ const Dashboard: React.FC = () => {
                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100">
                         <Shield className="w-5 h-5 text-slate-900" />
                       </div>
-                      <h4 className="font-semibold text-slate-900 tracking-tight">Account Password</h4>
+                      <h4 className="font-bold text-slate-900 tracking-tight">Account Password</h4>
                       <p className="text-[11px] text-slate-500 leading-relaxed font-medium">Update your password to keep your account and license keys secure.</p>
                       <button 
                         onClick={() => setActiveModal('password')}
-                        className="w-full py-3 bg-white text-slate-900 rounded-xl border border-slate-200 text-[10px] font-semibold uppercase tracking-[0.2em] hover:bg-slate-100 transition-all shadow-sm"
+                        className="w-full py-3 bg-white text-slate-900 rounded-xl border border-slate-200 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-slate-100 transition-all shadow-sm"
                       >
                         Change Password
                       </button>
@@ -381,11 +381,11 @@ const Dashboard: React.FC = () => {
                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100">
                         <AlertTriangle className="w-5 h-5 text-rose-600" />
                       </div>
-                      <h4 className="font-semibold text-rose-900 tracking-tight">Danger Zone</h4>
+                      <h4 className="font-bold text-rose-900 tracking-tight">Danger Zone</h4>
                       <p className="text-[11px] text-rose-700 leading-relaxed font-medium">Permanently close your account and remove access to all purchases.</p>
                       <button 
                         onClick={() => setActiveModal('deactivate')}
-                        className="w-full py-3 bg-rose-600 text-white rounded-xl text-[10px] font-semibold uppercase tracking-[0.2em] hover:bg-rose-700 transition-all shadow-sm"
+                        className="w-full py-3 bg-rose-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-rose-700 transition-all shadow-sm"
                       >
                         Deactivate Account
                       </button>
@@ -405,35 +405,35 @@ const Dashboard: React.FC = () => {
             <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-slate-100 rounded-xl text-slate-900"><Lock className="w-5 h-5" /></div>
-                <h3 className="text-xl font-semibold tracking-tight">Update Password</h3>
+                <h3 className="text-xl font-bold tracking-tight">Update Password</h3>
               </div>
               <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-slate-50 rounded-full transition-all"><X className="w-6 h-6 text-slate-400" /></button>
             </div>
             <form onSubmit={handlePasswordUpdate} className="p-8 space-y-6">
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">New Secure Password</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Secure Password</label>
                 <input 
                   type="password" 
                   required 
                   value={passwordForm.newPassword}
                   onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
-                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm" 
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" 
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
                 <input 
                   type="password" 
                   required 
                   value={passwordForm.confirmPassword}
                   onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
-                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm" 
+                  className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" 
                 />
               </div>
               <button 
                 type="submit" 
                 disabled={modalLoading}
-                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold hover:bg-slate-800 transition-all uppercase text-[10px] tracking-[0.2em] shadow-lg flex items-center justify-center min-h-[56px]"
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all uppercase text-[10px] tracking-[0.2em] shadow-lg flex items-center justify-center min-h-[56px]"
               >
                 {modalLoading ? <LoadingDots color="text-white" /> : 'Update Credentials'}
               </button>
@@ -450,14 +450,14 @@ const Dashboard: React.FC = () => {
                 <AlertTriangle className="w-8 h-8" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-slate-900 tracking-tight">Final Confirmation</h3>
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Final Confirmation</h3>
                 <p className="text-[11px] text-slate-500 leading-relaxed px-4 font-medium">This action is permanent. You will lose access to all purchased digital assets and your transaction history.</p>
               </div>
               <div className="space-y-3 pt-4">
-                <button onClick={handleDeactivate} className="w-full py-4 bg-rose-600 text-white rounded-2xl font-semibold hover:bg-rose-700 transition-all uppercase text-[10px] tracking-[0.2em] shadow-lg">
+                <button onClick={handleDeactivate} className="w-full py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition-all uppercase text-[10px] tracking-[0.2em] shadow-lg">
                   Confirm Deactivation
                 </button>
-                <button onClick={() => setActiveModal(null)} className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-semibold hover:bg-slate-200 transition-all uppercase text-[10px] tracking-[0.2em]">
+                <button onClick={() => setActiveModal(null)} className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all uppercase text-[10px] tracking-[0.2em]">
                   Abort Protocol
                 </button>
               </div>

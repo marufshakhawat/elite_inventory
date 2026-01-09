@@ -41,13 +41,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         {/* Visual Stock Warning */}
         {product.stock < 10 && product.stock > 0 && (
-          <div className="absolute top-0 left-0 w-full bg-rose-600 text-white text-[9px] font-semibold py-1.5 flex items-center justify-center gap-1 uppercase tracking-widest z-10 animate-pulse">
+          <div className="absolute top-0 left-0 w-full bg-rose-600 text-white text-[9px] font-black py-1.5 flex items-center justify-center gap-1 uppercase tracking-widest z-10 animate-pulse">
             <AlertTriangle className="w-3 h-3" /> Only {product.stock} keys remaining
           </div>
         )}
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
-             <span className="bg-white text-slate-900 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-widest">Out of Stock</span>
+             <span className="bg-white text-slate-900 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Out of Stock</span>
           </div>
         )}
         
@@ -56,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <button 
             onClick={handleQuickBuy}
             disabled={product.stock === 0}
-            className="bg-white text-slate-900 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-2xl hover:bg-slate-50 active:scale-95 disabled:opacity-0"
+            className="bg-white text-slate-900 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-2xl hover:bg-slate-50 active:scale-95 disabled:opacity-0"
           >
             <Zap className="w-4 h-4 fill-slate-900" />
             Quick Buy
@@ -66,15 +66,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">{product.category}</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{product.category}</p>
           <div className="flex items-center bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
-            <Star className="w-3 h-3 text-slate-900 fill-slate-900 mr-1" />
-            <span className="text-[10px] font-semibold text-slate-900">{product.rating}</span>
+            <Star className="w-3 h-3 text-slate-900 fill-current mr-1" />
+            <span className="text-[10px] font-black text-slate-900">{product.rating}</span>
           </div>
         </div>
         
         <Link to={`/product/${product.slug}`} className="flex-1">
-          <h3 className="text-slate-900 font-semibold text-base mb-4 group-hover:text-slate-600 transition-colors line-clamp-2 min-h-[3rem] leading-tight">
+          <h3 className="text-slate-900 font-bold text-base mb-4 group-hover:text-slate-600 transition-colors line-clamp-2 min-h-[3rem] leading-tight">
             {product.name}
           </h3>
         </Link>
@@ -86,7 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               onClick={() => toggleWishlist(product.id)}
               className={`p-2.5 rounded-full border transition-all ${isWishlisted ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'}`}
             >
-              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
+              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
             </button>
             <button
               onClick={() => addToCart(product)}

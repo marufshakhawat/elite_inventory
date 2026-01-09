@@ -110,7 +110,7 @@ const ToastContainer = () => {
           ) : (
             <Info className="w-5 h-5 text-blue-400 shrink-0" />
           )}
-          <p className="text-[10px] font-semibold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
           <button onClick={() => removeToast(toast.id)} className="text-slate-400 hover:text-white transition-colors shrink-0">
             <X className="w-4 h-4" />
           </button>

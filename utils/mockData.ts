@@ -41,30 +41,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.7,
     is_shared_personal_enabled: true
   },
-  {
-    id: 'w3',
-    slug: 'jasper-ai-creator-plan',
-    name: 'Jasper AI Creator Plan (Shared)',
-    price: 1200,
-    description: 'The world\'s best AI copywriter. Generate high-quality content for blogs, ads, and social media.',
-    category: 'Writing Tools',
-    image: 'https://images.unsplash.com/photo-1675271591211-126ad94e495d?auto=format&fit=crop&q=80&w=600',
-    stock: 5,
-    rating: 4.8,
-    is_shared_personal_enabled: true
-  },
-  {
-    id: 'w4',
-    slug: 'quillbot-premium-yearly',
-    name: 'QuillBot Premium (Yearly)',
-    price: 1500,
-    description: 'Unleash your writing with the best paraphrasing tool. Unlimited words and all modes unlocked.',
-    category: 'Writing Tools',
-    image: 'https://images.unsplash.com/photo-1516414447565-b14be0adf13e?auto=format&fit=crop&q=80&w=600',
-    stock: 25,
-    rating: 4.9
-  },
-
   // Educational Tools
   {
     id: 'e1',
@@ -89,19 +65,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 15,
     rating: 4.8
   },
-  {
-    id: 'e3',
-    slug: 'masterclass-all-access',
-    name: 'MasterClass All-Access (Shared)',
-    price: 950,
-    description: 'Learn from the best in the world. 180+ instructors across business, arts, science, and more.',
-    category: 'Educational Tools',
-    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=600',
-    stock: 10,
-    rating: 4.9,
-    featured: true
-  },
-
   // Graphics Tools
   {
     id: 'ad1',
@@ -127,19 +90,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.8,
     featured: true
   },
-  {
-    id: 'g2',
-    slug: 'midjourney-basic-shared',
-    name: 'Midjourney Basic (Shared)',
-    price: 850,
-    description: 'Generate stunning AI art with the world\'s most advanced image generation model.',
-    category: 'Graphics Tools',
-    image: 'https://images.unsplash.com/photo-1675557009875-436f595b189d?auto=format&fit=crop&q=80&w=600',
-    stock: 6,
-    rating: 5.0,
-    featured: true
-  },
-
   // Graphics Resources
   {
     id: 'gr1',
@@ -152,18 +102,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 45,
     rating: 4.6
   },
-  {
-    id: 'gr2',
-    slug: 'envato-elements-30-days',
-    name: 'Envato Elements (30 Days)',
-    price: 1100,
-    description: 'Unlimited downloads of themes, graphics, video templates, and millions of creative assets.',
-    category: 'Graphics Resources',
-    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=600',
-    stock: 20,
-    rating: 4.9
-  },
-
   // Premium VPN
   {
     id: 'v1',
@@ -189,7 +127,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 25,
     rating: 4.7
   },
-
   // Software & Apps
   {
     id: 'cc1',
@@ -214,29 +151,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 15,
     rating: 4.9
   },
-  {
-    id: 'sa1',
-    slug: 'microsoft-365-family-yearly',
-    name: 'Microsoft 365 Family (Yearly)',
-    price: 2200,
-    description: 'Official license for Word, Excel, PowerPoint, and 1TB OneDrive storage.',
-    category: 'Software & Apps',
-    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600',
-    stock: 10,
-    rating: 4.8
-  },
-  {
-    id: 'sa2',
-    slug: 'windows-11-pro-retail-key',
-    name: 'Windows 11 Pro Retail Key',
-    price: 650,
-    description: 'Genuine Retail license for Windows 11 Pro. Bind with your Microsoft account.',
-    category: 'Software & Apps',
-    image: 'https://images.unsplash.com/photo-1633419461186-7d40a38105ec?auto=format&fit=crop&q=80&w=600',
-    stock: 100,
-    rating: 4.9
-  },
-
   // Gaming
   {
     id: 'gm1',
@@ -260,18 +174,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 100,
     rating: 4.9
   },
-  {
-    id: 'gm3',
-    slug: 'xbox-game-pass-ultimate-1-month',
-    name: 'Xbox Game Pass Ultimate (1 Month)',
-    price: 850,
-    description: 'Play hundreds of high-quality games on console, PC, and cloud.',
-    category: 'Gaming',
-    image: 'https://images.unsplash.com/photo-1605902711622-cfb43c443ffb?auto=format&fit=crop&q=80&w=600',
-    stock: 30,
-    rating: 4.8
-  },
-
   // Streaming Platform
   {
     id: 'sp1',
@@ -309,29 +211,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.8,
     is_slots_enabled: true
   },
-  {
-    id: 'st2',
-    slug: 'disney-plus-premium-shared',
-    name: 'Disney+ Premium (Shared Profile)',
-    price: 450,
-    description: 'Stream Marvel, Pixar, Star Wars, and Disney classics in 4K UHD.',
-    category: 'Streaming Platform',
-    image: 'https://images.unsplash.com/photo-1605648916361-9bc12ad6a569?auto=format&fit=crop&q=80&w=600',
-    stock: 15,
-    rating: 4.7
-  },
-  {
-    id: 'st3',
-    slug: 'prime-video-monthly-shared',
-    name: 'Amazon Prime Video (Monthly Shared)',
-    price: 300,
-    description: 'Watch popular movies and TV shows, including Amazon Originals.',
-    category: 'Streaming Platform',
-    image: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&q=80&w=600',
-    stock: 20,
-    rating: 4.6
-  },
-
   // Gift Card
   {
     id: 'gc1',
@@ -343,16 +222,5 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600',
     stock: 200,
     rating: 5.0
-  },
-  {
-    id: 'gc2',
-    slug: 'apple-gift-card-10-usd',
-    name: 'Apple Gift Card 10 USD (US)',
-    price: 1350,
-    description: 'Use for App Store, iTunes, and iCloud subscriptions.',
-    category: 'Gift Card',
-    image: 'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&q=80&w=600',
-    stock: 50,
-    rating: 4.9
   }
 ];
