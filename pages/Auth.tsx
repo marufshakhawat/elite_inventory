@@ -18,14 +18,14 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
-  const [smtpError, setSmtpError] = useState(false);
+  const [smtpStatus, setSmtpStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [searchParams] = useSearchParams();
   const isLinkExpired = searchParams.get('error') === 'expired';
 
   const { login, signup, resendVerification, isAuth, isLoading, user } = useApp();
   const navigate = useNavigate();
 
-  // Redirect logic: only redirect when auth is complete and profile is fetched
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuth && !isLoading && user) {
       const destination = user.role === 'admin' ? '/admin' : '/dashboard';
@@ -43,27 +43,29 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     e.preventDefault();
     setLoading(true);
     setShowResend(false);
-    setSmtpError(false);
+    setSmtpStatus('idle');
     
     if (view === 'login') {
       const success = await login(email, password);
       if (!success) {
+        // If login fails, offer resend in case it was a verification issue
         setShowResend(true);
         setLoading(false);
       }
     } else if (view === 'signup') {
+      setSmtpStatus('sending');
       try {
         const success = await signup(email, password, name);
         if (success) {
+          setSmtpStatus('sent');
           setView('login');
           setPassword('');
           setShowResend(true);
+        } else {
+          setSmtpStatus('idle');
         }
       } catch (err: any) {
-        const msg = err.message?.toLowerCase() || '';
-        if (msg.includes('error sending') || msg.includes('smtp')) {
-          setSmtpError(true);
-        }
+        setSmtpStatus('idle');
       } finally {
         setLoading(false);
       }
@@ -71,17 +73,21 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   };
 
   const handleResend = async () => {
-    if (!email) return;
+    if (!email) {
+      alert("Enter your email first.");
+      return;
+    }
     setLoading(true);
+    setSmtpStatus('sending');
     await resendVerification(email);
+    setSmtpStatus('sent');
     setLoading(false);
   };
 
   const getTitle = () => (view === 'login' ? 'Welcome Back' : 'Create Account');
-  const getSubtitle = () => (view === 'login' ? 'Sign in to access your assets.' : 'Join our premium marketplace.');
+  const getSubtitle = () => (view === 'login' ? 'Log in to access your secure inventory.' : 'Join the elite marketplace.');
 
-  // Refined visibility: Don't block the page if user is NOT authenticated.
-  // Only show the global loader if we ARE authenticated but still waiting on profile data.
+  // Refined visibility logic
   if (isLoading && isAuth) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <LoadingDots />
@@ -103,35 +109,23 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           {isLinkExpired && (
              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3 items-start animate-fadeIn">
                 <Timer className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[10px] font-bold text-rose-900 uppercase tracking-widest leading-none mb-1">Link Expired</p>
-                  <p className="text-[9px] text-rose-700 leading-normal uppercase font-bold">
-                    Verification tokens expire quickly. Please request a new link below.
-                  </p>
-                </div>
+                <p className="text-[9px] text-rose-700 leading-normal uppercase font-bold">
+                  Verification link expired. Request a new one below.
+                </p>
              </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
-                {/* Simplified & Centered Security Message */}
-                <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center text-center">
-                  <ShieldCheck className="w-6 h-6 text-slate-900 mb-2" />
-                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-tight max-w-[220px]">
+                {/* SMALL, CENTERED, SIMPLE SECURITY POLICY */}
+                <div className="flex flex-col items-center text-center px-4">
+                  <ShieldCheck className="w-5 h-5 text-slate-900 mb-2" />
+                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-tight max-w-[240px]">
                     Verify your email to keep your account safe. No verification means no access.
                   </p>
                 </div>
                 
-                {smtpError && (
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex gap-3 items-start">
-                    <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                    <p className="text-[9px] text-blue-700 leading-normal uppercase font-bold">
-                      Mail server busy. Try again in 5 minutes.
-                    </p>
-                  </div>
-                )}
-
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                   <input 
@@ -168,22 +162,27 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             >
               {loading ? <LoadingDots color="text-white" /> : (
                 <>
-                  {view === 'login' ? 'Authenticate' : 'Register Now'}
+                  {view === 'login' ? 'Authenticate' : 'Begin Deployment'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>
           </form>
 
-          {showResend && (
+          {(showResend || smtpStatus === 'sent') && (
             <div className="mt-6 text-center animate-fadeIn">
+              <div className="p-3 bg-slate-50 rounded-xl mb-4">
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                  {smtpStatus === 'sent' ? 'Verification Sent! Check your Inbox & Spam folders.' : 'Missing verification?'}
+                </p>
+              </div>
               <button 
                 onClick={handleResend}
                 disabled={loading}
-                className="inline-flex items-center gap-2 text-[10px] font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
+                className="inline-flex items-center gap-2 text-[10px] font-black text-slate-900 hover:opacity-70 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
               >
                 {loading ? <LoadingDots size="w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
-                Resend Verification
+                Resend Confirmation
               </button>
             </div>
           )}
@@ -195,7 +194,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             onClick={() => {
               setView(view === 'login' ? 'signup' : 'login');
               setShowResend(false);
-              setSmtpError(false);
+              setSmtpStatus('idle');
             }} 
             className="font-black text-slate-900 hover:underline tracking-tight"
           >

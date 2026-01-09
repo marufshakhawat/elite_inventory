@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext.tsx';
-import { CheckCircle, Info, X, ChevronUp, AlertCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Info, X, ChevronUp, AlertCircle, AlertTriangle, Moon, Sun } from 'lucide-react';
 import Navbar from './components/Navbar.tsx';
 import Footer from './components/Footer.tsx';
 import Home from './pages/Home.tsx';
@@ -20,7 +20,7 @@ import Legal from './pages/Legal.tsx';
 import Chatbot from './components/Chatbot.tsx';
 
 // Smooth Three-Dots Glowing Component
-export const LoadingDots: React.FC<{ color?: string, size?: string }> = ({ color = 'text-slate-900', size = '' }) => (
+export const LoadingDots: React.FC<{ color?: string, size?: string }> = ({ color = 'text-slate-900 dark:text-slate-100', size = '' }) => (
   <div className={`dot-glowing ${color} ${size}`}>
     <div></div>
     <div></div>
@@ -34,6 +34,31 @@ const ScrollToTop = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
+};
+
+const ThemeToggle = () => {
+  const { theme, toggleTheme } = useApp();
+  
+  return (
+    <button
+      onClick={toggleTheme}
+      className={`fixed bottom-8 left-8 z-50 p-4 rounded-full backdrop-blur-md shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group border ${
+        theme === 'dark' 
+          ? 'bg-white/10 text-yellow-400 border-white/20' 
+          : 'bg-slate-900/5 text-slate-900 border-slate-900/10'
+      }`}
+      aria-label="Toggle Theme"
+    >
+      {theme === 'dark' ? (
+        <Sun className="w-5 h-5 transition-transform group-hover:rotate-45" />
+      ) : (
+        <Moon className="w-5 h-5 transition-transform group-hover:-rotate-12" />
+      )}
+      <span className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl hidden sm:inline-block pointer-events-none">
+        {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+      </span>
+    </button>
+  );
 };
 
 const AuthErrorHandler = () => {
@@ -124,7 +149,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
   const { isAuth, user, isLoading } = useApp();
   
   if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
       <LoadingDots />
     </div>
   );
@@ -136,7 +161,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
 
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <ScrollToTop />
       <AuthErrorHandler />
       <Navbar />
@@ -177,6 +202,7 @@ const AppContent: React.FC = () => {
       </main>
       <Footer />
       <BackToTopButton />
+      <ThemeToggle />
       <Chatbot />
       <ToastContainer />
     </div>

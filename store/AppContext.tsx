@@ -21,11 +21,13 @@ interface AppContextType {
   toasts: Toast[];
   settings: AppSettings;
   isChatOpen: boolean;
+  theme: 'light' | 'dark';
   addToCart: (product: Product, quantity?: number, variants?: Partial<CartItem>) => void;
   removeFromCart: (cartItemId: string) => void;
   updateCartQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
   toggleWishlist: (productId: string) => void;
+  toggleTheme: () => void;
   login: (email: string, pass: string) => Promise<boolean>;
   signup: (email: string, pass: string, name: string) => Promise<boolean>;
   resendVerification: (email: string) => Promise<void>;
@@ -68,6 +70,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isLoading, setIsLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+  });
 
   useEffect(() => {
     const initialize = async () => {
@@ -128,6 +133,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -413,8 +429,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   return (
     <AppContext.Provider value={{
-      products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
-      addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
+      products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen, theme,
+      addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, toggleTheme,
       login, signup, resendVerification, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
       fulfillOrder, updateSettings, addToast, removeToast, setChatOpen
     }}>

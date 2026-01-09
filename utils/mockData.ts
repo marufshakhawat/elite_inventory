@@ -116,6 +116,17 @@ export const INITIAL_PRODUCTS: Product[] = [
     featured: true,
     is_duration_enabled: true
   },
+  {
+    id: 'v2',
+    slug: 'surfshark-vpn-shared',
+    name: 'Surfshark VPN (2 Year Shared)',
+    price: 950,
+    description: 'Secure your digital life with an award-winning VPN. Shared account access.',
+    category: 'Premium VPN',
+    image: 'https://images.unsplash.com/photo-1633265485768-30691b195860?auto=format&fit=crop&q=80&w=600',
+    stock: 25,
+    rating: 4.7
+  },
   // Software & Apps
   {
     id: 'cc1',
@@ -129,17 +140,16 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.9,
     featured: true
   },
-  // Marketing Tools
   {
-    id: 'mt1',
-    slug: 'semrush-guru-shared',
-    name: 'Semrush Guru Shared (30 Days)',
-    price: 650,
-    description: 'All-in-one marketing suite for SEO, PPC, and competitive research.',
-    category: 'Marketing Tools',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600',
-    stock: 8,
-    rating: 4.8
+    id: 'cc2',
+    slug: 'idm-lifetime-key',
+    name: 'Internet Download Manager (IDM)',
+    price: 1850,
+    description: 'Genuine lifetime license key for the world\'s fastest download manager.',
+    category: 'Software & Apps',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600',
+    stock: 15,
+    rating: 4.9
   },
   // Gaming
   {
@@ -151,6 +161,17 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'Gaming',
     image: 'https://images.unsplash.com/photo-1614680376739-414d95ff43df?auto=format&fit=crop&q=80&w=600',
     stock: 15,
+    rating: 4.9
+  },
+  {
+    id: 'gm2',
+    slug: 'steam-gift-card-5-usd',
+    name: 'Steam Gift Card 5 USD (Global)',
+    price: 680,
+    description: 'Instantly add funds to your Steam wallet. Global region activation.',
+    category: 'Gaming',
+    image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&q=80&w=600',
+    stock: 100,
     rating: 4.9
   },
   // Streaming Platform
@@ -177,6 +198,18 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 25,
     rating: 4.8,
     is_duration_enabled: true
+  },
+  {
+    id: 'st1',
+    slug: 'netflix-premium-4k-shared',
+    name: 'Netflix Premium 4K (Shared Profile)',
+    price: 600,
+    description: '1 month access to 1 private profile on a shared 4K account.',
+    category: 'Streaming Platform',
+    image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=600',
+    stock: 10,
+    rating: 4.8,
+    is_slots_enabled: true
   },
   // Gift Card
   {
