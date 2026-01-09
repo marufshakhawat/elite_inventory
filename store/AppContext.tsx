@@ -69,85 +69,90 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // Helper to fetch full profile and orders
-  const fetchUserData = async (userId: string) => {
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    if (profileError) {
-      console.error('Profile fetch error:', profileError);
-      return null;
+  // Core function to sync user profile and orders
+  const syncUserSession = async (userId: string | null) => {
+    if (!userId) {
+      setUser(null);
+      setIsAuth(false);
+      setOrders([]);
+      return;
     }
 
-    const isAdmin = profile.role === 'admin';
-    const { data: orderData } = await supabase
-      .from('orders')
-      .select('*')
-      .order('date', { ascending: false })
-      .filter(isAdmin ? 'id' : 'userId', isAdmin ? 'neq' : 'eq', isAdmin ? '00000000-0000-0000-0000-000000000000' : userId);
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (profileError) {
+        console.error('Session sync error:', profileError);
+        // If profile doesn't exist yet, we might need to wait for the trigger or retry
+        return;
+      }
 
-    setOrders(orderData || []);
-    setUser(profile);
-    return profile;
+      setIsAuth(true);
+      setUser(profile);
+
+      // Fetch orders for this user
+      const isAdmin = profile.role === 'admin';
+      const orderQuery = supabase.from('orders').select('*').order('date', { ascending: false });
+      if (!isAdmin) {
+        orderQuery.eq('userId', userId);
+      }
+      
+      const { data: orderData } = await orderQuery;
+      setOrders(orderData || []);
+    } catch (err) {
+      console.error('Critical sync error:', err);
+    }
   };
 
   useEffect(() => {
-    const initialize = async () => {
+    const initApp = async () => {
+      setIsLoading(true);
       try {
-        // 1. Check current session
+        // 1. Initial Session Check
         const { data: { session } } = await supabase.auth.getSession();
-        
         if (session?.user) {
-          setIsAuth(true);
-          await fetchUserData(session.user.id);
+          await syncUserSession(session.user.id);
         }
 
-        // 2. Load global app data
-        const [productsRes, settingsRes] = await Promise.all([
+        // 2. Load Global Data
+        const [prodRes, settRes] = await Promise.all([
           supabase.from('products').select('*'),
           supabase.from('settings').select('*').eq('key', 'global').single()
         ]);
-        
-        if (productsRes.data && productsRes.data.length > 0) setProducts(productsRes.data);
+
+        if (prodRes.data && prodRes.data.length > 0) setProducts(prodRes.data);
         else setProducts(INITIAL_PRODUCTS);
 
-        if (settingsRes.data?.value) setSettings(settingsRes.data.value);
-
-      } catch (err) {
+        if (settRes.data?.value) setSettings(settRes.data.value);
+      } catch (e) {
+        console.error('Init error:', e);
         setProducts(INITIAL_PRODUCTS);
       } finally {
         setIsLoading(false);
       }
     };
 
-    initialize();
+    initApp();
 
-    // 3. Listen for session changes
+    // 3. Auth Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setIsAuth(true);
-        if (!user || user.id !== session.user.id) {
-          await fetchUserData(session.user.id);
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        if (session?.user) {
+          await syncUserSession(session.user.id);
         }
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setIsAuth(false);
         setUser(null);
         setOrders([]);
-      }
-
-      if (event === 'SIGNED_OUT') {
-        setIsAuth(false);
-        setUser(null);
-        setOrders([]);
-        setIsLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [user?.id]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -230,7 +235,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     
     if (error) {
       if (error.message.toLowerCase().includes('already registered') || error.status === 400) {
-        addToast('Email already exists. Redirecting to login...', 'info');
+        addToast('Email already registered. Switching to login...', 'info');
         setTimeout(() => {
           window.location.href = `/login?registered=true`;
         }, 1500);
@@ -240,7 +245,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     if (data.user) {
-      addToast('Success! Check your email to verify your account.', 'success');
+      addToast('Success! Verification email sent.', 'success');
     }
     return true;
   };
@@ -262,13 +267,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) addToast(error.message, 'error');
-    else {
+    try {
+      await supabase.auth.signOut();
+      // Force clear local state immediately
       setIsAuth(false);
       setUser(null);
       setOrders([]);
       addToast('Signed out successfully.');
+    } catch (e) {
+      console.error('Logout error:', e);
+      // Even if API fails, clear local state
+      setIsAuth(false);
+      setUser(null);
     }
   };
 

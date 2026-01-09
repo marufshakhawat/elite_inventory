@@ -124,6 +124,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
   const { isAuth, user, isLoading } = useApp();
   const location = useLocation();
   
+  // If we are still initializing the session, show loader
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -133,8 +134,19 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
     );
   }
 
+  // Once loading is finished, if not auth, redirect
   if (!isAuth) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // If auth is true but user data hasn't arrived (edge case), show mini-loader
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <LoadingDots />
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fetching Profile...</p>
+      </div>
+    );
   }
 
   if (adminOnly && user?.role !== 'admin') {
