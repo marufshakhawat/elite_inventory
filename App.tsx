@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext.tsx';
 import { CheckCircle, Info, X, ChevronUp, AlertCircle, AlertTriangle, MessageCircle } from 'lucide-react';
 import Navbar from './components/Navbar.tsx';
@@ -118,7 +118,7 @@ const ToastContainer = () => {
           ) : toast.type === 'error' ? (
             <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
           ) : (
-            <Info className="w-5 h-5 text-blue-400 shrink-0" />
+            <PopInfo className="w-5 h-5 text-blue-400 shrink-0" />
           )}
           <p className="text-[10px] font-bold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
           <button onClick={() => removeToast(toast.id)} className="text-slate-400 hover:text-white transition-colors shrink-0">
@@ -129,6 +129,9 @@ const ToastContainer = () => {
     </div>
   );
 };
+
+// Aliasing Info to avoid conflict if needed, though not strictly required here
+const PopInfo = Info;
 
 const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean }> = ({ children, adminOnly = false }) => {
   const { isAuth, user, isLoading } = useApp();
