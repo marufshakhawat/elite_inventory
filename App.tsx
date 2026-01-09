@@ -21,10 +21,10 @@ import Chatbot from './components/Chatbot.tsx';
 
 // Smooth Three-Dots Glowing Component
 export const LoadingDots: React.FC<{ color?: string, size?: string }> = ({ color = 'text-slate-900', size = '' }) => (
-  <div className={`dot-glowing ${color} ${size}`}>
-    <div></div>
-    <div></div>
-    <div></div>
+  <div className="flex items-center justify-center gap-1.5 py-4">
+    <div className={`w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:-0.3s] ${color} ${size}`}></div>
+    <div className={`w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:-0.15s] ${color} ${size}`}></div>
+    <div className={`w-2 h-2 rounded-full bg-current animate-bounce ${color} ${size}`}></div>
   </div>
 );
 
@@ -122,15 +122,25 @@ const ToastContainer = () => {
 
 const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean }> = ({ children, adminOnly = false }) => {
   const { isAuth, user, isLoading } = useApp();
+  const location = useLocation();
   
-  if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <LoadingDots />
-    </div>
-  );
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <LoadingDots />
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verifying Identity...</p>
+      </div>
+    );
+  }
 
-  if (!isAuth) return <Navigate to="/login" replace />;
-  if (adminOnly && user?.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  if (!isAuth) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (adminOnly && user?.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <>{children}</>;
 };
 
