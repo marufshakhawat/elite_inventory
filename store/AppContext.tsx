@@ -20,7 +20,6 @@ interface AppContextType {
   isLoading: boolean;
   toasts: Toast[];
   settings: AppSettings;
-  isChatOpen: boolean;
   addToCart: (product: Product, quantity?: number, variants?: Partial<CartItem>) => void;
   removeFromCart: (cartItemId: string) => void;
   updateCartQuantity: (cartItemId: string, quantity: number) => void;
@@ -43,7 +42,6 @@ interface AppContextType {
   updateSettings: (newSettings: Partial<AppSettings>) => Promise<void>;
   addToast: (message: string, type?: 'success' | 'info' | 'error') => void;
   removeToast: (id: number) => void;
-  setChatOpen: (open: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -68,7 +66,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isAuth, setIsAuth] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const fetchProfileAndOrders = async (userId: string) => {
     try {
@@ -80,7 +77,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       
       if (profileError) throw profileError;
 
-      // Check if account is deactivated
       if (profile.status === 'deactivated' || profile.status === 'suspended') {
         await logout();
         addToast('This account has been deactivated.', 'error');
@@ -366,10 +362,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   return (
     <AppContext.Provider value={{
-      products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
+      products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
       login, signup, resendVerification, updatePassword, logout, deactivateAccount, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
-      fulfillOrder, updateSettings, addToast, removeToast, setChatOpen: setIsChatOpen
+      fulfillOrder, updateSettings, addToast, removeToast
     }}>
       {children}
     </AppContext.Provider>

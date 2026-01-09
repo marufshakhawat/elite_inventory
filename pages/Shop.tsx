@@ -133,10 +133,10 @@ const Shop: React.FC = () => {
                 onChange={e => setSort(e.target.value)}
                 className="flex-1 sm:flex-none bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold px-5 py-3 outline-none focus:ring-2 focus:ring-slate-900 appearance-none pr-10 cursor-pointer uppercase tracking-widest"
               >
-                <option value="newest">Recent Nodes</option>
-                <option value="lowToHigh">Value: Low to High</option>
-                <option value="highToLow">Value: High to Low</option>
-                <option value="topRated">Peak Performance</option>
+                <option value="newest">Newest Arrivals</option>
+                <option value="lowToHigh">Price: Low to High</option>
+                <option value="highToLow">Price: High to Low</option>
+                <option value="topRated">Top Rated</option>
               </select>
             </div>
           </div>
