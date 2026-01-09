@@ -8,9 +8,7 @@
     <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1lV3IyTImIseKY4ag_e3fjPaDRoOy-FMr">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      // Configure Tailwind for class-based dark mode
       tailwind.config = {
-        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -19,14 +17,6 @@
           }
         }
       }
-      
-      // Immediate theme apply to prevent flash
-      (function() {
-        const theme = localStorage.getItem('theme') || 'light';
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        }
-      })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +24,6 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .dark .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); }
         
         .product-card:hover .product-actions { opacity: 1; transform: translateY(0); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -42,9 +31,6 @@
         
         input:focus, select:focus, textarea:focus {
             --tw-ring-color: #0f172a !important; /* slate-900 */
-        }
-        .dark input:focus, .dark select:focus, .dark textarea:focus {
-            --tw-ring-color: #f8fafc !important; /* slate-50 */
         }
 
         /* Glowing Dots Loading Effect */
@@ -76,10 +62,6 @@
             background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
             background-size: 200% 100%;
             animation: shimmer 2s infinite linear;
-        }
-        .dark .shimmer {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
         }
 
         /* Fade and scale animations */
@@ -121,7 +103,7 @@
   };
 </script>
 </head>
-<body class="bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+<body class="bg-slate-50 text-slate-900 transition-colors duration-300">
     <div class="bot-legal-link">
         <a href="/privacy">Privacy Policy</a>
         <a href="/terms">Terms of Service</a>

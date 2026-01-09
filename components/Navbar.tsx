@@ -7,7 +7,6 @@ import {
   Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift, ShieldAlert 
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { slugify } from '../utils/mockData.ts';
 
 const Navbar: React.FC = () => {
   const { cart, user, isAuth, logout } = useApp();
@@ -40,21 +39,21 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 dark:bg-slate-900/80 dark:border-slate-800 transition-colors duration-300">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 md:h-24">
             <div className="flex items-center">
               {/* Menu Trigger */}
               <button 
                 onClick={() => setIsDrawerOpen(true)}
-                className="p-2 mr-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors"
+                className="p-2 mr-2 text-slate-600 hover:text-slate-900 transition-colors"
                 aria-label="Open Menu"
               >
                 <Menu className="w-6 h-6" />
               </button>
 
               <Link to="/" className="flex items-center">
-                <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[160px] sm:w-[220px] h-auto dark:invert dark:opacity-90" />
+                <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[160px] sm:w-[220px] h-auto" />
               </Link>
             </div>
 
@@ -65,7 +64,7 @@ const Navbar: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search inventory..."
-                  className="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-slate-900 focus:bg-white dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-slate-50 transition-all outline-none"
+                  className="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && navigate(`/shop?q=${(e.target as HTMLInputElement).value}`)}
                 />
               </div>
@@ -73,13 +72,13 @@ const Navbar: React.FC = () => {
 
             {/* Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4 md:space-x-6">
-              <Link to="/wishlist" className="hidden sm:block text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">
+              <Link to="/wishlist" className="hidden sm:block text-slate-600 hover:text-slate-900 transition-colors">
                 <Heart className="w-5 h-5" />
               </Link>
-              <Link to="/cart" className="relative group text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 p-2">
+              <Link to="/cart" className="relative group text-slate-600 hover:text-slate-900 p-2">
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-slate-900 text-white dark:bg-slate-50 dark:text-slate-900 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute top-0 right-0 bg-slate-900 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -87,15 +86,15 @@ const Navbar: React.FC = () => {
               
               {isAuth ? (
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                  <Link to={user?.role === 'admin' ? '/admin' : '/dashboard'} className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 p-2">
+                  <Link to={user?.role === 'admin' ? '/admin' : '/dashboard'} className="text-slate-600 hover:text-slate-900 p-2">
                     <User className="w-5 h-5" />
                   </Link>
-                  <button onClick={logout} className="hidden md:block text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 p-2">
+                  <button onClick={logout} className="hidden md:block text-slate-600 hover:text-slate-900 p-2">
                     <LogOut className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:opacity-90 transition-colors">
+                <Link to="/login" className="bg-slate-900 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:opacity-90 transition-colors">
                   Login
                 </Link>
               )}
