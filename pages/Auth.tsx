@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { Mail, Lock, User, ArrowRight, Loader2, AlertTriangle, RefreshCw, Info, Timer } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 
 type AuthView = 'login' | 'signup';
@@ -14,8 +14,17 @@ const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
   const [smtpError, setSmtpError] = useState(false);
+  const [searchParams] = useSearchParams();
+  const isLinkExpired = searchParams.get('error') === 'expired';
+
   const { login, signup, resendVerification } = useApp();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLinkExpired) {
+      setShowResend(true);
+    }
+  }, [isLinkExpired]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +59,10 @@ const Auth: React.FC = () => {
   };
 
   const handleResend = async () => {
-    if (!email) return;
+    if (!email) {
+      alert("Please enter your email address first.");
+      return;
+    }
     setLoading(true);
     await resendVerification(email);
     setLoading(false);
@@ -78,6 +90,18 @@ const Auth: React.FC = () => {
         </div>
 
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
+          {isLinkExpired && (
+             <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3 items-start animate-fadeIn">
+                <Timer className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-rose-900 uppercase">Verification Link Expired</p>
+                  <p className="text-[10px] text-rose-700 mt-1 leading-normal uppercase">
+                    Security tokens expire after a short time. Please enter your email below and click "Resend" to get a fresh link.
+                  </p>
+                </div>
+             </div>
+          )}
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
@@ -151,7 +175,7 @@ const Auth: React.FC = () => {
             <div className="mt-6 text-center animate-fadeIn">
               <button 
                 onClick={handleResend}
-                disabled={loading || !email}
+                disabled={loading}
                 className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest disabled:opacity-30"
               >
                 <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />

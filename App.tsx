@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext.tsx';
-import { CheckCircle, Info, X, ChevronUp, Loader2 } from 'lucide-react';
+import { CheckCircle, Info, X, ChevronUp, Loader2, AlertCircle } from 'lucide-react';
 import Navbar from './components/Navbar.tsx';
 import Footer from './components/Footer.tsx';
 import Home from './pages/Home.tsx';
@@ -24,6 +24,29 @@ const ScrollToTop = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+  return null;
+};
+
+const AuthErrorHandler = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { addToast } = useApp();
+
+  useEffect(() => {
+    // Detect error params in hash (Supabase auth redirects use hashes)
+    const hash = location.hash;
+    if (hash && hash.includes('error=')) {
+      const params = new URLSearchParams(hash.replace('#', '?'));
+      const errorMsg = params.get('error_description') || 'Authentication failed';
+      const errorCode = params.get('error_code');
+
+      if (errorCode === 'otp_expired' || errorMsg.includes('invalid') || errorMsg.includes('expired')) {
+        addToast('Verification link expired. Please request a new one.', 'error');
+        navigate('/login?error=expired', { replace: true });
+      }
+    }
+  }, [location, navigate, addToast]);
+
   return null;
 };
 
@@ -101,6 +124,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <ScrollToTop />
+      <AuthErrorHandler />
       <Navbar />
       <main className="flex-grow">
         <Routes>
