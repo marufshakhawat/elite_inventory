@@ -7,6 +7,7 @@ import {
   Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift, ShieldAlert 
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { slugify } from '../utils/mockData.ts';
 
 const Navbar: React.FC = () => {
   const { cart, user, isAuth, logout } = useApp();
@@ -39,7 +40,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-colors duration-300">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 md:h-24">
             <div className="flex items-center">
@@ -94,7 +95,7 @@ const Navbar: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="bg-slate-900 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:opacity-90 transition-colors">
+                <Link to="/login" className="bg-slate-900 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-slate-800 transition-colors">
                   Login
                 </Link>
               )}

@@ -68,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex justify-between items-start mb-2">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{product.category}</p>
           <div className="flex items-center bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
-            <Star className="w-3 h-3 text-slate-900 fill-current mr-1" />
+            <Star className="w-3 h-3 text-slate-900 fill-slate-900 mr-1" />
             <span className="text-[10px] font-black text-slate-900">{product.rating}</span>
           </div>
         </div>
@@ -86,7 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               onClick={() => toggleWishlist(product.id)}
               className={`p-2.5 rounded-full border transition-all ${isWishlisted ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'}`}
             >
-              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
             </button>
             <button
               onClick={() => addToCart(product)}

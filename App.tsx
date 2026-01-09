@@ -136,7 +136,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
 
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 transition-colors duration-500">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <ScrollToTop />
       <AuthErrorHandler />
       <Navbar />
