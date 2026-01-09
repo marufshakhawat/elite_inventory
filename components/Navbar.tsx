@@ -7,7 +7,6 @@ import {
   Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift, ShieldAlert 
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { slugify } from '../utils/mockData.ts';
 
 const Navbar: React.FC = () => {
   const { cart, user, isAuth, logout } = useApp();
@@ -40,7 +39,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 md:h-24">
             <div className="flex items-center">
@@ -79,7 +78,7 @@ const Navbar: React.FC = () => {
               <Link to="/cart" className="relative group text-slate-600 hover:text-slate-900 p-2">
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-slate-900 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute top-0 right-0 bg-slate-900 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -95,7 +94,7 @@ const Navbar: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="bg-slate-900 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-slate-800 transition-colors">
+                <Link to="/login" className="bg-slate-900 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold hover:opacity-90 transition-colors">
                   Login
                 </Link>
               )}
@@ -120,7 +119,7 @@ const Navbar: React.FC = () => {
         >
           {/* Header */}
           <div className="flex-none p-4 sm:p-6 border-b border-white/10 flex justify-between items-center bg-[#111317]">
-            <span className="text-base sm:text-lg font-bold text-white tracking-tight">ELITE MENU</span>
+            <span className="text-base sm:text-lg font-semibold text-white tracking-tight">ELITE MENU</span>
             <button 
               onClick={() => setIsDrawerOpen(false)}
               className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
@@ -164,7 +163,7 @@ const Navbar: React.FC = () => {
           
           {/* Footer */}
           <div className="flex-none p-6 border-t border-white/10 bg-[#111317]">
-            <p className="text-[10px] text-slate-600 uppercase font-bold tracking-widest text-center">
+            <p className="text-[10px] text-slate-600 uppercase font-semibold tracking-widest text-center">
               ELITE INVENTORY V2.4.0
             </p>
           </div>

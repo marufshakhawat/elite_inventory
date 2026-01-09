@@ -110,7 +110,7 @@ const ToastContainer = () => {
           ) : (
             <Info className="w-5 h-5 text-blue-400 shrink-0" />
           )}
-          <p className="text-[10px] font-bold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
           <button onClick={() => removeToast(toast.id)} className="text-slate-400 hover:text-white transition-colors shrink-0">
             <X className="w-4 h-4" />
           </button>
@@ -136,7 +136,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
 
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 transition-colors duration-500">
       <ScrollToTop />
       <AuthErrorHandler />
       <Navbar />

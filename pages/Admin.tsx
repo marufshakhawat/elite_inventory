@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { Product, Order, User } from '../types';
-// Import slugify from utils/mockData.ts
 import { slugify } from '../utils/mockData.ts';
 
 type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'settings';
@@ -60,7 +59,6 @@ const Admin: React.FC = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
-    // Fix: Added missing 'slug' property to the Product object to satisfy interface requirements
     const product: Product = {
       id: editingProduct?.id || `ELT-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
       slug: editingProduct?.slug || slugify(name),
@@ -119,7 +117,7 @@ const Admin: React.FC = () => {
         {/* Sidebar Nav */}
         <aside className="w-full lg:w-64 flex flex-col gap-4">
           <div className="bg-slate-900 rounded-[2rem] p-6 text-white">
-            <h2 className="text-xl font-bold tracking-tight">Admin Panel</h2>
+            <h2 className="text-xl font-semibold tracking-tight">Admin Panel</h2>
           </div>
 
           <nav className="bg-white p-2 rounded-[2rem] border border-slate-100 shadow-sm space-y-1 overflow-x-auto no-scrollbar flex lg:flex-col items-center lg:items-stretch">
@@ -138,9 +136,9 @@ const Admin: React.FC = () => {
                 }`}
               >
                 <tab.icon className="w-5 h-5 flex-shrink-0" />
-                <span className="font-bold text-sm">{tab.label}</span>
+                <span className="font-semibold text-sm">{tab.label}</span>
                 {tab.id === 'orders' && analytics.pendingCount > 0 && (
-                  <span className="ml-auto hidden lg:inline-block bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto hidden lg:inline-block bg-rose-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                     {analytics.pendingCount}
                   </span>
                 )}
@@ -160,8 +158,8 @@ const Admin: React.FC = () => {
                       <stat.icon className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{stat.label}</p>
-                      <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{stat.label}</p>
+                      <p className="text-xl font-semibold text-slate-900">{stat.value}</p>
                     </div>
                   </div>
                 ))}
@@ -170,7 +168,7 @@ const Admin: React.FC = () => {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
                   <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold text-slate-900">Recent Orders</h3>
+                    <h3 className="font-semibold text-slate-900">Recent Orders</h3>
                     <TrendingUp className="w-4 h-4 text-emerald-500" />
                   </div>
                   <div className="divide-y divide-slate-100 overflow-x-auto">
@@ -182,11 +180,11 @@ const Admin: React.FC = () => {
                               {o.status === 'delivered' ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-slate-900">Order {o.id}</p>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{o.status}</p>
+                              <p className="text-sm font-semibold text-slate-900">Order {o.id}</p>
+                              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">{o.status}</p>
                             </div>
                           </div>
-                          <p className="font-bold text-slate-900">৳{o.total.toLocaleString()}</p>
+                          <p className="font-semibold text-slate-900">৳{o.total.toLocaleString()}</p>
                         </div>
                       ))}
                     </div>
@@ -194,24 +192,24 @@ const Admin: React.FC = () => {
                 </div>
 
                 <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 space-y-6">
-                  <h3 className="font-bold text-slate-900">Stock Status</h3>
+                  <h3 className="font-semibold text-slate-900">Stock Status</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-4 bg-rose-50 rounded-2xl border border-rose-100 text-rose-700">
                       <div className="flex items-center gap-3">
                         <AlertCircle className="w-5 h-5" />
-                        <span className="text-sm font-bold">Out of Stock Products</span>
+                        <span className="text-sm font-semibold">Out of Stock Products</span>
                       </div>
-                      <span className="text-xl font-bold">{analytics.outOfStock}</span>
+                      <span className="text-xl font-semibold">{analytics.outOfStock}</span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-amber-50 rounded-2xl border border-amber-100 text-amber-700">
                       <div className="flex items-center gap-3">
                         <Info className="w-5 h-5" />
-                        <span className="text-sm font-bold">Low Stock Warning</span>
+                        <span className="text-sm font-semibold">Low Stock Warning</span>
                       </div>
-                      <span className="text-xl font-bold">{analytics.lowStock}</span>
+                      <span className="text-xl font-semibold">{analytics.lowStock}</span>
                     </div>
                   </div>
-                  <button onClick={() => setActiveTab('products')} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">Manage Products</button>
+                  <button onClick={() => setActiveTab('products')} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">Manage Products</button>
                 </div>
               </div>
             </div>
@@ -232,7 +230,7 @@ const Admin: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-                  className="w-full sm:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-lg"
+                  className="w-full sm:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl font-semibold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-lg"
                 >
                   <Plus className="w-4 h-4" /> Add Product
                 </button>
@@ -241,7 +239,7 @@ const Admin: React.FC = () => {
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[900px]">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
+                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-semibold uppercase tracking-widest border-b border-slate-100">
                       <th className="px-8 py-5">Product Details</th>
                       <th className="px-8 py-5">Category</th>
                       <th className="px-8 py-5">Price</th>
@@ -258,17 +256,17 @@ const Admin: React.FC = () => {
                               <img src={p.image} onError={handleImageError} className="w-full h-full object-cover" />
                             </div>
                             <div>
-                               <p className="font-bold text-slate-900 text-sm">{p.name}</p>
+                               <p className="font-semibold text-slate-900 text-sm">{p.name}</p>
                                <p className="text-[10px] font-mono text-slate-400 uppercase tracking-tight">{p.id}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-8 py-6">
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">{p.category}</span>
+                          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">{p.category}</span>
                         </td>
-                        <td className="px-8 py-6 text-sm font-bold text-slate-900">৳{p.price.toLocaleString()}</td>
+                        <td className="px-8 py-6 text-sm font-semibold text-slate-900">৳{p.price.toLocaleString()}</td>
                         <td className="px-8 py-6">
-                          <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase ${p.stock < 10 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                          <span className={`text-[10px] font-semibold px-3 py-1 rounded-full uppercase ${p.stock < 10 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
                             {p.stock} units
                           </span>
                         </td>
@@ -299,8 +297,8 @@ const Admin: React.FC = () => {
           {activeTab === 'orders' && (
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden animate-fadeIn">
                <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <h2 className="text-xl font-bold text-slate-900">Manage Orders</h2>
-                <div className="relative flex-1 max-w-md w-full">
+                <h2 className="text-xl font-semibold text-slate-900">Manage Orders</h2>
+                <div className="relative flex-1 max-md w-full">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input 
                     type="text" 
@@ -314,7 +312,7 @@ const Admin: React.FC = () => {
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[1000px]">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
+                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-semibold uppercase tracking-widest border-b border-slate-100">
                       <th className="px-8 py-5">Order ID</th>
                       <th className="px-8 py-5">Customer Phone</th>
                       <th className="px-8 py-5">Payment Proof</th>
@@ -327,19 +325,19 @@ const Admin: React.FC = () => {
                       <tr key={o.id} className="group hover:bg-slate-50 transition-colors">
                         <td className="px-8 py-6">
                           <div className="space-y-1">
-                            <p className="font-mono text-[10px] font-bold text-slate-900 select-all uppercase">{o.id}</p>
-                            <p className="text-xs font-bold text-slate-500 uppercase">{o.paymentMethod}</p>
+                            <p className="font-mono text-[10px] font-semibold text-slate-900 select-all uppercase">{o.id}</p>
+                            <p className="text-xs font-semibold text-slate-500 uppercase">{o.paymentMethod}</p>
                           </div>
                         </td>
                         <td className="px-8 py-6">
                            <div className="flex items-center gap-2">
                              <Smartphone className="w-3.5 h-3.5 text-slate-300" />
-                             <span className="text-xs font-bold text-slate-700">{o.mfsSenderNumber || 'Anonymous'}</span>
+                             <span className="text-xs font-semibold text-slate-700">{o.mfsSenderNumber || 'Anonymous'}</span>
                            </div>
                         </td>
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono font-black text-slate-900 bg-slate-100 px-3 py-1 rounded select-all uppercase border border-slate-200">
+                            <span className="text-xs font-mono font-bold text-slate-900 bg-slate-100 px-3 py-1 rounded select-all uppercase border border-slate-200">
                               {o.mfsTransactionId || 'MISSING'}
                             </span>
                             {o.screenshotUrl && (
@@ -348,13 +346,13 @@ const Admin: React.FC = () => {
                                 className="p-2.5 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
                               >
                                 <Eye className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">View Photo</span>
+                                <span className="text-[10px] font-semibold uppercase tracking-widest">View Photo</span>
                               </button>
                             )}
                           </div>
                         </td>
                         <td className="px-8 py-6">
-                           <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${
+                           <span className={`text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-widest ${
                             o.status === 'delivered' ? 'bg-emerald-50 text-emerald-600' : 
                             o.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'
                           }`}>
@@ -366,7 +364,7 @@ const Admin: React.FC = () => {
                             <select 
                               value={o.status}
                               onChange={(e) => handleStatusChange(o, e.target.value)}
-                              className="text-[10px] font-bold uppercase bg-white border border-slate-200 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 transition-all cursor-pointer shadow-sm"
+                              className="text-[10px] font-semibold uppercase bg-white border border-slate-200 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 transition-all cursor-pointer shadow-sm"
                             >
                               <option value="pending">Pending</option>
                               <option value="processing">Verifying</option>
@@ -389,12 +387,12 @@ const Admin: React.FC = () => {
           {activeTab === 'users' && (
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden animate-fadeIn">
               <div className="p-8 border-b border-slate-100">
-                <h2 className="text-xl font-bold text-slate-900">Customer List</h2>
+                <h2 className="text-xl font-semibold text-slate-900">Customer List</h2>
               </div>
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[700px]">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-100">
+                    <tr className="bg-slate-50 text-slate-400 text-[10px] font-semibold uppercase tracking-widest border-b border-slate-100">
                       <th className="px-8 py-5">Customer Name</th>
                       <th className="px-8 py-5">Status</th>
                       <th className="px-8 py-5">Contact</th>
@@ -405,24 +403,24 @@ const Admin: React.FC = () => {
                     <tr className="hover:bg-slate-50 transition-colors">
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-slate-900 flex-shrink-0 flex items-center justify-center text-white font-bold">EU</div>
+                          <div className="w-12 h-12 rounded-2xl bg-slate-900 flex-shrink-0 flex items-center justify-center text-white font-semibold">EU</div>
                           <div>
-                            <p className="font-bold text-slate-900 text-sm">eliteuser</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Joined 2024</p>
+                            <p className="font-semibold text-slate-900 text-sm">eliteuser</p>
+                            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Joined 2024</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest">Active Member</span>
+                        <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest">Active Member</span>
                       </td>
                       <td className="px-8 py-6">
                         <div className="space-y-1">
-                          <p className="text-xs font-bold text-slate-900">user@eliteinventory.store</p>
-                          <p className="text-[10px] text-slate-400">+880 1700-000000</p>
+                          <p className="text-xs font-semibold text-slate-900">user@eliteinventory.store</p>
+                          <p className="text-[10px] text-slate-400 font-semibold">+880 1700-000000</p>
                         </div>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors">View Profile</button>
+                        <button className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors">View Profile</button>
                       </td>
                     </tr>
                   </tbody>
@@ -440,14 +438,14 @@ const Admin: React.FC = () => {
                       <Smartphone className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">Payment Settings</h3>
+                      <h3 className="font-semibold text-slate-900 text-lg">Payment Settings</h3>
                       <p className="text-xs text-slate-400">Update bKash and Nagad numbers.</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">bKash Number</label>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">bKash Number</label>
                       <input 
                         type="text" 
                         value={settings.bkashNumber}
@@ -456,7 +454,7 @@ const Admin: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nagad Number</label>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Nagad Number</label>
                       <input 
                         type="text" 
                         value={settings.nagadNumber}
@@ -473,14 +471,14 @@ const Admin: React.FC = () => {
                       <AlertCircle className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">Site Announcements</h3>
+                      <h3 className="font-semibold text-slate-900 text-lg">Site Announcements</h3>
                       <p className="text-xs text-slate-400">Manage site-wide messages.</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Banner Message</label>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Banner Message</label>
                       <textarea 
                         rows={3}
                         value={settings.announcement}
@@ -489,7 +487,7 @@ const Admin: React.FC = () => {
                       ></textarea>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                       <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Maintenance Mode</span>
+                       <span className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest">Maintenance Mode</span>
                        <button 
                         onClick={() => updateSettings({ maintenanceMode: !settings.maintenanceMode })}
                         className={`w-12 h-6 rounded-full transition-all relative ${settings.maintenanceMode ? 'bg-rose-500' : 'bg-slate-300'}`}
@@ -515,10 +513,10 @@ const Admin: React.FC = () => {
             <img src={previewImage} onError={handleImageError} className="w-full h-auto rounded-lg max-h-[80vh] object-contain" alt="Payment Proof" />
             <div className="p-4 sm:p-6 bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment Evidence</p>
-                <p className="text-sm font-bold text-slate-900">Transaction Screenshot</p>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Payment Evidence</p>
+                <p className="text-sm font-semibold text-slate-900">Transaction Screenshot</p>
               </div>
-              <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800">
+              <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-slate-800">
                 <ExternalLink className="w-4 h-4" /> Open Full-Res
               </button>
             </div>
@@ -536,8 +534,8 @@ const Admin: React.FC = () => {
                    <KeyIcon className="w-5 h-5" />
                  </div>
                  <div>
-                   <h3 className="text-lg sm:text-xl font-bold text-slate-900">Order Delivery</h3>
-                   <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Order ID: {fulfillingOrder.id}</p>
+                   <h3 className="text-lg sm:text-xl font-semibold text-slate-900">Order Delivery</h3>
+                   <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-widest">Order ID: {fulfillingOrder.id}</p>
                  </div>
                </div>
                <button onClick={() => setIsFulfillmentModalOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors p-2">
@@ -548,11 +546,11 @@ const Admin: React.FC = () => {
               <div className="space-y-4">
                 <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-start gap-3">
                   <Info className="w-4 h-4 text-indigo-600 mt-0.5" />
-                  <p className="text-[11px] text-indigo-700 leading-relaxed">Enter the product license or delivery instructions. The customer will receive this immediately in their dashboard.</p>
+                  <p className="text-[11px] text-indigo-700 leading-relaxed font-medium">Enter the product license or delivery instructions. The customer will receive this immediately in their dashboard.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Delivery Details (Key or Link)</label>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Delivery Details (Key or Link)</label>
                   <div className="relative">
                     <LinkIcon className="absolute left-4 top-4 text-slate-400 w-4 h-4" />
                     <textarea 
@@ -569,14 +567,14 @@ const Admin: React.FC = () => {
               <div className="flex gap-4">
                 <button 
                   onClick={() => setIsFulfillmentModalOpen(false)}
-                  className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all"
+                  className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-semibold uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={submitFulfillment}
                   disabled={!fulfillmentInput.trim()}
-                  className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all shadow-xl disabled:opacity-50"
+                  className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-semibold uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all shadow-xl disabled:opacity-50"
                 >
                   Complete Order
                 </button>
@@ -596,8 +594,8 @@ const Admin: React.FC = () => {
                   {editingProduct ? <Edit2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Product Editor</p>
+                  <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-widest">Product Editor</p>
                 </div>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-900 p-2 hover:bg-slate-100 rounded-full transition-all">
@@ -607,37 +605,37 @@ const Admin: React.FC = () => {
             <form onSubmit={handleSaveProduct} className="p-6 sm:p-10 space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="sm:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Name</label>
-                  <input name="name" defaultValue={editingProduct?.name} required placeholder="e.g. ChatGPT Plus Official" className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-slate-900 text-sm" />
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Product Name</label>
+                  <input name="name" defaultValue={editingProduct?.name} required placeholder="e.g. ChatGPT Plus Official" className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-slate-900 text-sm" />
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Price (৳)</label>
-                  <input name="price" type="number" step="1" defaultValue={editingProduct?.price} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Price (৳)</label>
+                  <input name="price" type="number" step="1" defaultValue={editingProduct?.price} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm" />
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stock Level</label>
-                  <input name="stock" type="number" defaultValue={editingProduct?.stock} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-bold text-sm" />
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Stock Level</label>
+                  <input name="stock" type="number" defaultValue={editingProduct?.stock} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-sm" />
                 </div>
               </div>
 
               {/* Product Options */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                <div className="flex items-center gap-2 text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">
                   <Layers className="w-3 h-3" /> Product Variant Options
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-600 uppercase">Shared/Personal</span>
+                    <span className="text-[10px] font-semibold text-slate-600 uppercase">Shared/Personal</span>
                     <input type="checkbox" name="is_shared_personal_enabled" defaultChecked={editingProduct?.is_shared_personal_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
                   </div>
                   <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-600 uppercase">Duration</span>
+                    <span className="text-[10px] font-semibold text-slate-600 uppercase">Duration</span>
                     <input type="checkbox" name="is_duration_enabled" defaultChecked={editingProduct?.is_duration_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
                   </div>
                   <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-600 uppercase">Profile Slots</span>
+                    <span className="text-[10px] font-semibold text-slate-600 uppercase">Profile Slots</span>
                     <input type="checkbox" name="is_slots_enabled" defaultChecked={editingProduct?.is_slots_enabled} className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
                   </div>
                 </div>
@@ -645,8 +643,8 @@ const Admin: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="sm:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Category Selection</label>
-                  <select name="category" defaultValue={editingProduct?.category} className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none font-bold text-slate-700 text-sm">
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Category Selection</label>
+                  <select name="category" defaultValue={editingProduct?.category} className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none font-semibold text-slate-700 text-sm">
                     <option value="Writing Tools">Writing Tools</option>
                     <option value="Educational Tools">Educational Tools</option>
                     <option value="Graphics Tools">Graphics Tools</option>
@@ -662,7 +660,7 @@ const Admin: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Image URL</label>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Product Image URL</label>
                   <div className="relative">
                     <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <input name="image" defaultValue={editingProduct?.image} className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-xs" placeholder="https://image-url.com/photo.jpg" />
@@ -670,7 +668,7 @@ const Admin: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Product Description</label>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Product Description</label>
                   <textarea name="description" defaultValue={editingProduct?.description} rows={3} required className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm leading-relaxed" />
                 </div>
               </div>
@@ -678,14 +676,14 @@ const Admin: React.FC = () => {
               <div className="flex items-center justify-between bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-5 h-5 text-indigo-500" />
-                  <label htmlFor="featured" className="text-[10px] font-bold text-slate-900 uppercase tracking-widest cursor-pointer">Featured Product</label>
+                  <label htmlFor="featured" className="text-[10px] font-semibold text-slate-900 uppercase tracking-widest cursor-pointer">Featured Product</label>
                 </div>
                 <input type="checkbox" name="featured" id="featured" defaultChecked={editingProduct?.featured} className="w-6 h-6 rounded-lg border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer" />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 mt-4 pb-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:flex-1 py-4 sm:py-5 bg-slate-100 rounded-2xl font-bold text-slate-600 hover:bg-slate-200 transition-all uppercase text-[10px] tracking-widest">Cancel</button>
-                <button type="submit" className="w-full sm:flex-[2] py-4 sm:py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl uppercase text-[10px] tracking-widest">Save Product</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:flex-1 py-4 sm:py-5 bg-slate-100 rounded-2xl font-semibold text-slate-600 hover:bg-slate-200 transition-all uppercase text-[10px] tracking-widest">Cancel</button>
+                <button type="submit" className="w-full sm:flex-[2] py-4 sm:py-5 bg-slate-900 text-white rounded-2xl font-semibold hover:bg-slate-800 transition-all shadow-xl uppercase text-[10px] tracking-widest">Save Product</button>
               </div>
             </form>
           </div>
