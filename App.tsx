@@ -42,20 +42,24 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className={`fixed bottom-8 left-8 z-50 p-4 rounded-full backdrop-blur-md shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group border ${
+      className={`fixed bottom-8 left-8 z-50 p-4 rounded-full backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-500 hover:scale-110 active:scale-90 group border ${
         theme === 'dark' 
-          ? 'bg-white/10 text-yellow-400 border-white/20' 
-          : 'bg-slate-900/5 text-slate-900 border-slate-900/10'
+          ? 'bg-slate-900/40 text-yellow-400 border-white/10 hover:bg-slate-900/60' 
+          : 'bg-white/40 text-slate-900 border-slate-900/10 hover:bg-white/60'
       }`}
       aria-label="Toggle Theme"
     >
-      {theme === 'dark' ? (
-        <Sun className="w-5 h-5 transition-transform group-hover:rotate-45" />
-      ) : (
-        <Moon className="w-5 h-5 transition-transform group-hover:-rotate-12" />
-      )}
-      <span className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl hidden sm:inline-block pointer-events-none">
-        {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+      <div className="relative w-6 h-6 flex items-center justify-center">
+        {theme === 'dark' ? (
+          <Sun className="w-6 h-6 transition-all duration-500 rotate-0 scale-100 group-hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
+        ) : (
+          <Moon className="w-6 h-6 transition-all duration-500 rotate-0 scale-100 group-hover:drop-shadow-[0_0_8px_rgba(15,23,42,0.3)]" />
+        )}
+      </div>
+      
+      {/* Tooltip */}
+      <span className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-xl hidden sm:inline-block pointer-events-none border border-white/10 dark:border-slate-900/10">
+        {theme === 'dark' ? 'Day Mode' : 'Night Mode'}
       </span>
     </button>
   );
@@ -109,7 +113,7 @@ const BackToTopButton = () => {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-24 right-8 z-50 p-4 rounded-full bg-slate-900/80 backdrop-blur-md text-white border border-white/10 shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group ${
+      className={`fixed bottom-24 right-8 z-50 p-4 rounded-full bg-slate-900/80 dark:bg-slate-100/80 backdrop-blur-md text-white dark:text-slate-900 border border-white/10 dark:border-slate-900/10 shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
       aria-label="Back to Top"
@@ -126,17 +130,17 @@ const ToastContainer = () => {
       {toasts.map(toast => (
         <div 
           key={toast.id} 
-          className="pointer-events-auto flex items-center gap-3 bg-slate-900/95 text-white px-5 py-4 rounded-2xl shadow-2xl animate-fadeIn border border-white/10 backdrop-blur-md w-full"
+          className="pointer-events-auto flex items-center gap-3 bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 px-5 py-4 rounded-2xl shadow-2xl animate-fadeIn border border-white/10 dark:border-slate-900/10 backdrop-blur-md w-full"
         >
           {toast.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+            <CheckCircle className="w-5 h-5 text-green-400 dark:text-green-600 shrink-0" />
           ) : toast.type === 'error' ? (
-            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            <AlertTriangle className="w-5 h-5 text-rose-400 dark:text-rose-600 shrink-0" />
           ) : (
-            <Info className="w-5 h-5 text-blue-400 shrink-0" />
+            <Info className="w-5 h-5 text-blue-400 dark:text-blue-600 shrink-0" />
           )}
           <p className="text-[10px] font-bold uppercase tracking-widest flex-1 leading-relaxed">{toast.message}</p>
-          <button onClick={() => removeToast(toast.id)} className="text-slate-400 hover:text-white transition-colors shrink-0">
+          <button onClick={() => removeToast(toast.id)} className="text-slate-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-900 transition-colors shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -161,7 +165,7 @@ const ProtectedRoute: React.FC<{ children?: React.ReactNode, adminOnly?: boolean
 
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
       <ScrollToTop />
       <AuthErrorHandler />
       <Navbar />

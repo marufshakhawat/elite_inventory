@@ -74,6 +74,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
   });
 
+  // Sync theme class with document element reactively
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -135,14 +145,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   const fetchUserProfile = async (userId: string) => {
