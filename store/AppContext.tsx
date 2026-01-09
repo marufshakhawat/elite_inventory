@@ -28,7 +28,6 @@ interface AppContextType {
   toggleWishlist: (productId: string) => void;
   login: (email: string, pass: string) => Promise<boolean>;
   signup: (email: string, pass: string, name: string) => Promise<boolean>;
-  signInWithGoogle: () => Promise<void>;
   updatePassword: (newPass: string) => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
@@ -251,20 +250,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return true;
   };
 
-  const signInWithGoogle = async () => {
-    const siteUrl = window.location.origin;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: siteUrl, 
-      },
-    });
-    if (error) {
-      console.error('OAuth Error:', error.message);
-      addToast(`Login failed: ${error.message}`, 'error');
-    }
-  };
-
   const updatePassword = async (newPass: string): Promise<boolean> => {
     const { error } = await supabase.auth.updateUser({ password: newPass });
     if (error) {
@@ -387,7 +372,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     <AppContext.Provider value={{
       products, cart, wishlist, user, orders, isAuth, isLoading, toasts, settings, isChatOpen,
       addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist,
-      login, signup, signInWithGoogle, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
+      login, signup, updatePassword, logout, updateUser, addOrder, deleteOrder, updateProduct, deleteProduct, addProduct, updateOrderStatus,
       fulfillOrder, updateSettings, addToast, removeToast, setChatOpen
     }}>
       {children}
