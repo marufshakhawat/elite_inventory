@@ -1,4 +1,3 @@
-
 import { Product } from '../types';
 
 export const slugify = (text: string) => {
@@ -13,6 +12,19 @@ export const slugify = (text: string) => {
     .replace(/-+$/, '');
 };
 
+export const DEMO_CREDENTIALS = {
+  admin: {
+    email: 'admin@elite.com',
+    password: 'password123',
+    role: 'admin'
+  },
+  user: {
+    email: 'user@elite.com',
+    password: 'password123',
+    role: 'user'
+  }
+};
+
 export const INITIAL_PRODUCTS: Product[] = [
   // Writing Tools
   {
@@ -23,7 +35,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Get access to GPT-4o, DALL-E, and advanced data analysis. 1 month shared account access.',
     category: 'Writing Tools',
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600',
-    stock: 12,
+    stock: 5, // Below 10 to test warning
     rating: 4.9,
     featured: true,
     is_shared_personal_enabled: true,
@@ -207,7 +219,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: '1 month access to 1 private profile on a shared 4K account.',
     category: 'Streaming Platform',
     image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=600',
-    stock: 10,
+    stock: 9, // Critical stock testing
     rating: 4.8,
     is_slots_enabled: true
   },

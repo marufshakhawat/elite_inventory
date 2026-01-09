@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, User, AlertTriangle, RefreshCw, Info, Timer, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, AlertTriangle, RefreshCw, Info, Timer, ShieldCheck, Key, ShieldAlert } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { LoadingDots } from '../App';
+import { DEMO_CREDENTIALS } from '../utils/mockData';
 
 type AuthView = 'login' | 'signup';
 
@@ -48,7 +48,6 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     if (view === 'login') {
       const success = await login(email, password);
       if (!success) {
-        // If login fails, offer resend in case it was a verification issue
         setShowResend(true);
         setLoading(false);
       }
@@ -72,6 +71,15 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     }
   };
 
+  const handleDemoLogin = (type: 'admin' | 'user') => {
+    const creds = DEMO_CREDENTIALS[type];
+    setEmail(creds.email);
+    setPassword(creds.password);
+    setView('login');
+    // We give a tiny timeout so state updates before submit if we wanted to auto-submit, 
+    // but better to let them click the button themselves.
+  };
+
   const handleResend = async () => {
     if (!email) {
       alert("Enter your email first.");
@@ -87,7 +95,6 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   const getTitle = () => (view === 'login' ? 'Welcome Back' : 'Create Account');
   const getSubtitle = () => (view === 'login' ? 'Log in to access your secure inventory.' : 'Join the elite marketplace.');
 
-  // Refined visibility logic
   if (isLoading && isAuth) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <LoadingDots />
@@ -118,7 +125,6 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
-                {/* SMALL, CENTERED, SIMPLE SECURITY POLICY */}
                 <div className="flex flex-col items-center text-center px-4">
                   <ShieldCheck className="w-5 h-5 text-slate-900 mb-2" />
                   <p className="text-[10px] text-slate-500 font-semibold leading-relaxed uppercase tracking-tight max-w-[240px]">
@@ -166,21 +172,50 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
 
           {(showResend || smtpStatus === 'sent') && (
             <div className="mt-6 text-center animate-fadeIn">
-              <div className="p-3 bg-slate-50 rounded-xl mb-4">
-                <p className="text-[9px] text-slate-500 font-semibold uppercase tracking-widest leading-relaxed">
-                  {smtpStatus === 'sent' ? 'Verification Sent! Check your Inbox & Spam folders.' : 'Missing verification?'}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center justify-center gap-2 text-rose-600 mb-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Troubleshooting</span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-medium leading-relaxed uppercase tracking-tight mb-3">
+                  Check your <span className="text-slate-900 font-bold">Spam folder</span>. If you used a demo project, emails are limited to 3 per hour.
                 </p>
+                <button 
+                  onClick={handleResend}
+                  disabled={loading}
+                  className="inline-flex items-center gap-2 text-[10px] font-semibold text-slate-900 hover:opacity-70 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
+                >
+                  {loading ? <LoadingDots size="w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
+                  Resend Confirmation
+                </button>
               </div>
-              <button 
-                onClick={handleResend}
-                disabled={loading}
-                className="inline-flex items-center gap-2 text-[10px] font-semibold text-slate-900 hover:opacity-70 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
-              >
-                {loading ? <LoadingDots size="w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
-                Resend Confirmation
-              </button>
             </div>
           )}
+
+          <div className="my-8 flex items-center">
+            <div className="flex-1 h-px bg-slate-100" />
+            <span className="px-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Quick Access</span>
+            <div className="flex-1 h-px bg-slate-100" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={() => handleDemoLogin('user')}
+              className="flex items-center justify-center gap-2 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:bg-slate-100 transition-all"
+              title="Auto-fill Demo User Credentials"
+            >
+              <Key className="w-4 h-4 text-slate-400" />
+              <span className="text-[10px] font-bold text-slate-900 uppercase">Demo User</span>
+            </button>
+            <button 
+              onClick={() => handleDemoLogin('admin')}
+              className="flex items-center justify-center gap-2 p-4 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all shadow-md"
+              title="Auto-fill Demo Admin Credentials"
+            >
+              <ShieldAlert className="w-4 h-4 text-white" />
+              <span className="text-[10px] font-bold text-white uppercase">Demo Admin</span>
+            </button>
+          </div>
         </div>
 
         <p className="text-center mt-8 text-slate-500 text-sm font-medium">
