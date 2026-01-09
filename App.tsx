@@ -149,6 +149,7 @@ const AppContent: React.FC = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/login" element={<Auth />} />
+          <Route path="/register" element={<Auth defaultView="signup" />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           

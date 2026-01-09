@@ -1,5 +1,5 @@
 
-import { Product, User } from '../types';
+import { Product } from '../types';
 
 export const slugify = (text: string) => {
   return text
@@ -72,13 +72,57 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_slots_enabled: false
   },
   {
-    id: 'e2',
-    slug: 'linkedin-learning-premium',
-    name: 'LinkedIn Learning Premium',
-    price: 1200,
-    description: 'Access to 16,000+ expert-led courses. Enhance your professional skills.',
-    category: 'Educational Tools',
-    image: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf?auto=format&fit=crop&q=80&w=600',
+    id: 'sp1',
+    slug: 'spotify-premium-individual-1-month',
+    name: 'Spotify Premium Individual (1 Month)',
+    price: 150,
+    description: 'Ad-free music listening, offline playback, and unlimited skips. Private account.',
+    category: 'Streaming Platform',
+    image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?auto=format&fit=crop&q=80&w=600',
+    stock: 100,
+    rating: 4.9,
+    featured: true,
+    is_shared_personal_enabled: false,
+    is_duration_enabled: true,
+    is_slots_enabled: false
+  },
+  {
+    id: 'ad1',
+    slug: 'adobe-creative-cloud-all-apps-shared',
+    name: 'Adobe Creative Cloud All Apps (Shared)',
+    price: 1500,
+    description: 'Access 20+ creative apps including Photoshop, Illustrator, and Premiere Pro.',
+    category: 'Graphics Tools',
+    image: 'https://images.unsplash.com/photo-1626785774625-ddc7c82a1e5e?auto=format&fit=crop&q=80&w=600',
+    stock: 12,
+    rating: 4.8,
+    is_shared_personal_enabled: true,
+    is_duration_enabled: true,
+    is_slots_enabled: false
+  },
+  {
+    id: 'cc1',
+    slug: 'capcut-pro-lifetime-access',
+    name: 'CapCut Pro - Lifetime Access',
+    price: 800,
+    description: 'Unlock all pro features, effects, and 4K exports on the world\'s most popular video editor.',
+    category: 'Software & Apps',
+    image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=600',
+    stock: 50,
+    rating: 4.9,
+    featured: true,
+    is_shared_personal_enabled: false,
+    is_duration_enabled: false,
+    is_slots_enabled: false
+  },
+  {
+    id: 'yt1',
+    slug: 'youtube-premium-family-slot-1-month',
+    name: 'YouTube Premium Family Slot (1 Month)',
+    price: 200,
+    description: 'Ad-free YouTube and YouTube Music. Background play and offline downloads.',
+    category: 'Streaming Platform',
+    image: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c205?auto=format&fit=crop&q=80&w=600',
     stock: 25,
     rating: 4.8,
     is_shared_personal_enabled: false,
@@ -130,13 +174,3 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_slots_enabled: true
   }
 ];
-
-export const DUMMY_USER: User = {
-  id: 'u1',
-  name: 'Alex Johnson',
-  email: 'alex@example.com',
-  phone: '+880 1711-000000',
-  role: 'admin',
-  avatar: 'https://i.pravatar.cc/150?u=u1',
-  address: 'Digital Citizen St, Tech City'
-};
