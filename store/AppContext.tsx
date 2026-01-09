@@ -171,12 +171,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     const id = Date.now();
     setToasts(prev => {
-      // Prevent duplicate messages if they appear within a short interval
       const isDuplicate = prev.some(t => t.message === message);
       if (isDuplicate) return prev;
       return [...prev, { id, message, type }];
     });
-    setTimeout(() => removeToast(id), 4000);
+    setTimeout(() => removeToast(id), 5000);
   };
 
   const removeToast = (id: number) => {
@@ -247,7 +246,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const signup = async (email: string, pass: string, name: string): Promise<boolean> => {
-    // Stricter Password Validation
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
     if (!passwordRegex.test(pass)) {
       addToast('Password should be at least 8 characters. Password should contain at least one character of each: uppercase, lowercase, number, symbol.', 'error');
@@ -269,7 +267,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     if (data.user) {
-      addToast('Account created. Please check your email to verify.', 'success');
+      addToast('Account created. Check your email to verify identity.', 'success');
     }
     return true;
   };
@@ -282,7 +280,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (error) {
       addToast(error.message, 'error');
     } else {
-      addToast('A new verification email has been sent.', 'success');
+      addToast('Verification email resent.', 'success');
     }
   };
 
@@ -292,14 +290,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
       return false;
     }
-    addToast('Password update email sent. Check your inbox.', 'success');
+    addToast('Password updated.', 'success');
     return true;
   };
 
   const logout = async () => {
     setIsLoading(true);
     await supabase.auth.signOut();
-    addToast('Logged out safely');
+    addToast('Signed out safely.');
     setIsLoading(false);
   };
 
@@ -322,18 +320,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setUser({ ...user, ...allowedUpdates });
-      addToast('Identity updated');
+      addToast('Profile updated.');
     }
   };
 
   const addOrder = async (order: Order) => {
     const { error } = await supabase.from('orders').insert([order]);
     if (error) {
-      console.error('Order Insert Error:', error.message);
-      addToast('Verification failed. Try again.', 'error');
+      addToast('Failed to place order. Try again.', 'error');
     } else {
       setOrders(prev => [order, ...prev]);
-      addToast('Order placed successfully');
+      addToast('Order submitted for verification.');
     }
   };
 
@@ -353,7 +350,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setProducts(prev => [productWithSlug, ...prev]);
-      addToast('Asset added to inventory');
+      addToast('Product added.');
     }
   };
 
@@ -364,7 +361,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setProducts(prev => prev.map(p => p.id === product.id ? productWithSlug : p));
-      addToast('Inventory updated');
+      addToast('Inventory updated.');
     }
   };
 
@@ -374,7 +371,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setProducts(prev => prev.filter(p => p.id !== id));
-      addToast('Asset removed');
+      addToast('Product removed.');
     }
   };
   
@@ -397,7 +394,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered', fulfillmentData: data } : o));
-      addToast('Asset delivered successfully');
+      addToast('Order fulfilled.');
     }
   };
 
@@ -408,7 +405,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addToast(error.message, 'error');
     } else {
       setSettings(updated);
-      addToast('Global config updated');
+      addToast('Settings updated.');
     }
   };
 

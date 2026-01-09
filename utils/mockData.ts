@@ -14,49 +14,34 @@ export const slugify = (text: string) => {
 };
 
 export const INITIAL_PRODUCTS: Product[] = [
+  // Writing Tools
   {
     id: 'w1',
-    slug: 'chatgpt-plus-subscription-shared',
+    slug: 'chatgpt-plus-shared',
     name: 'ChatGPT Plus Subscription (Shared)',
     price: 750,
-    description: 'Get access to GPT-4, DALL-E, and faster response times. 1 month shared account access.',
+    description: 'Get access to GPT-4o, DALL-E, and advanced data analysis. 1 month shared account access.',
     category: 'Writing Tools',
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600',
-    stock: 5,
+    stock: 12,
     rating: 4.9,
     featured: true,
     is_shared_personal_enabled: true,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    is_duration_enabled: true
   },
   {
     id: 'w2',
     slug: 'grammarly-premium-shared',
     name: 'Grammarly Premium (Shared)',
     price: 450,
-    description: '1 month access to Grammarly Premium. Improve your writing and grammar instantly.',
+    description: 'Elevate your writing with advanced grammar, tone, and clarity suggestions.',
     category: 'Writing Tools',
     image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600',
     stock: 40,
     rating: 4.7,
-    is_shared_personal_enabled: true,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    is_shared_personal_enabled: true
   },
-  {
-    id: 'w3',
-    slug: 'quillbot-premium-1-month',
-    name: 'Quillbot Premium (1 Month)',
-    price: 400,
-    description: 'Paraphrasing tool that helps you write better, faster, and clearer.',
-    category: 'Writing Tools',
-    image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=600',
-    stock: 35,
-    rating: 4.6,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: false
-  },
+  // Educational Tools
   {
     id: 'e1',
     slug: 'skillshare-premium-3-months',
@@ -67,71 +52,35 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80&w=600',
     stock: 60,
     rating: 4.7,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    is_duration_enabled: true
   },
   {
-    id: 'sp1',
-    slug: 'spotify-premium-individual-1-month',
-    name: 'Spotify Premium Individual (1 Month)',
-    price: 150,
-    description: 'Ad-free music listening, offline playback, and unlimited skips. Private account.',
-    category: 'Streaming Platform',
-    image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?auto=format&fit=crop&q=80&w=600',
-    stock: 100,
-    rating: 4.9,
-    featured: true,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    id: 'e2',
+    slug: 'coursera-plus-monthly',
+    name: 'Coursera Plus (Monthly)',
+    price: 1200,
+    description: 'Unlimited access to 7,000+ world-class courses and certificate programs.',
+    category: 'Educational Tools',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=600',
+    stock: 15,
+    rating: 4.8
   },
+  // Graphics Tools
   {
     id: 'ad1',
-    slug: 'adobe-creative-cloud-all-apps-shared',
-    name: 'Adobe Creative Cloud All Apps (Shared)',
+    slug: 'adobe-creative-cloud-all-apps',
+    name: 'Adobe Creative Cloud (All Apps)',
     price: 1500,
     description: 'Access 20+ creative apps including Photoshop, Illustrator, and Premiere Pro.',
     category: 'Graphics Tools',
     image: 'https://images.unsplash.com/photo-1626785774625-ddc7c82a1e5e?auto=format&fit=crop&q=80&w=600',
-    stock: 12,
+    stock: 8,
     rating: 4.8,
-    is_shared_personal_enabled: true,
-    is_duration_enabled: true,
-    is_slots_enabled: false
-  },
-  {
-    id: 'cc1',
-    slug: 'capcut-pro-lifetime-access',
-    name: 'CapCut Pro - Lifetime Access',
-    price: 800,
-    description: 'Unlock all pro features, effects, and 4K exports on the world\'s most popular video editor.',
-    category: 'Software & Apps',
-    image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=600',
-    stock: 50,
-    rating: 4.9,
-    featured: true,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: false,
-    is_slots_enabled: false
-  },
-  {
-    id: 'yt1',
-    slug: 'youtube-premium-family-slot-1-month',
-    name: 'YouTube Premium Family Slot (1 Month)',
-    price: 200,
-    description: 'Ad-free YouTube and YouTube Music. Background play and offline downloads.',
-    category: 'Streaming Platform',
-    image: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c205?auto=format&fit=crop&q=80&w=600',
-    stock: 25,
-    rating: 4.8,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    is_shared_personal_enabled: true
   },
   {
     id: 'g1',
-    slug: 'canva-pro-lifetime-access',
+    slug: 'canva-pro-lifetime',
     name: 'Canva Pro - Lifetime Access',
     price: 1200,
     description: 'Join our premium team for lifetime access to all Canva Pro features and templates.',
@@ -139,38 +88,106 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=600',
     stock: 200,
     rating: 4.8,
-    featured: true,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: false,
-    is_slots_enabled: false
+    featured: true
   },
+  // Graphics Resources
+  {
+    id: 'gr1',
+    slug: 'freepik-premium-shared',
+    name: 'Freepik Premium (Shared)',
+    price: 350,
+    description: 'Download premium vectors, stock photos, and PSD files with no attribution.',
+    category: 'Graphics Resources',
+    image: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&q=80&w=600',
+    stock: 45,
+    rating: 4.6
+  },
+  // Premium VPN
   {
     id: 'v1',
-    slug: 'nordvpn-1-year-premium',
+    slug: 'nordvpn-1-year',
     name: 'NordVPN 1 Year Premium',
     price: 2400,
-    description: 'Ultra-fast VPN with military-grade encryption. Access content globally with ease.',
+    description: 'Ultra-fast VPN with military-grade encryption. Access content globally.',
     category: 'Premium VPN',
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600',
     stock: 150,
     rating: 4.6,
     featured: true,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: false
+    is_duration_enabled: true
+  },
+  // Software & Apps
+  {
+    id: 'cc1',
+    slug: 'capcut-pro-lifetime',
+    name: 'CapCut Pro - Lifetime Access',
+    price: 800,
+    description: 'Unlock all pro features, AI effects, and 4K exports on the best mobile editor.',
+    category: 'Software & Apps',
+    image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=600',
+    stock: 50,
+    rating: 4.9,
+    featured: true
+  },
+  // Marketing Tools
+  {
+    id: 'mt1',
+    slug: 'semrush-guru-shared',
+    name: 'Semrush Guru Shared (30 Days)',
+    price: 650,
+    description: 'All-in-one marketing suite for SEO, PPC, and competitive research.',
+    category: 'Marketing Tools',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600',
+    stock: 8,
+    rating: 4.8
+  },
+  // Gaming
+  {
+    id: 'gm1',
+    slug: 'discord-nitro-1-month',
+    name: 'Discord Nitro 1 Month (Gift)',
+    price: 1150,
+    description: 'HD streaming, 2 Server Boosts, and custom emojis.',
+    category: 'Gaming',
+    image: 'https://images.unsplash.com/photo-1614680376739-414d95ff43df?auto=format&fit=crop&q=80&w=600',
+    stock: 15,
+    rating: 4.9
+  },
+  // Streaming Platform
+  {
+    id: 'sp1',
+    slug: 'spotify-premium-individual',
+    name: 'Spotify Premium Individual',
+    price: 150,
+    description: 'Ad-free music listening, offline playback. Private account.',
+    category: 'Streaming Platform',
+    image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?auto=format&fit=crop&q=80&w=600',
+    stock: 100,
+    rating: 4.9,
+    featured: true
   },
   {
-    id: 'st1',
-    slug: 'netflix-premium-4k-shared-profile',
-    name: 'Netflix Premium 4K (Shared Profile)',
-    price: 600,
-    description: '1 month access to 1 private profile on a shared Netflix Premium account.',
+    id: 'yt1',
+    slug: 'youtube-premium-family',
+    name: 'YouTube Premium Family Slot',
+    price: 200,
+    description: 'Ad-free YouTube, background play, and offline downloads.',
     category: 'Streaming Platform',
-    image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=600',
-    stock: 8,
+    image: 'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c205?auto=format&fit=crop&q=80&w=600',
+    stock: 25,
     rating: 4.8,
-    is_shared_personal_enabled: false,
-    is_duration_enabled: true,
-    is_slots_enabled: true
+    is_duration_enabled: true
+  },
+  // Gift Card
+  {
+    id: 'gc1',
+    slug: 'razer-gold-5-usd',
+    name: 'Razer Gold 5 USD (Global)',
+    price: 650,
+    description: 'Virtual credit for gamers worldwide.',
+    category: 'Gift Card',
+    image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600',
+    stock: 200,
+    rating: 5.0
   }
 ];

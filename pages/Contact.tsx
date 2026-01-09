@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { supabase } from '../utils/supabase';
+import { LoadingDots } from '../App';
 
 const Contact: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -167,7 +168,7 @@ const Contact: React.FC = () => {
                 className="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all uppercase text-xs tracking-widest shadow-lg disabled:opacity-50"
               >
                 {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <LoadingDots color="text-white" />
                 ) : (
                   <>
                     <Send className="w-4 h-4" /> Send Message

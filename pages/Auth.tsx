@@ -25,7 +25,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   const { login, signup, resendVerification, isAuth, isLoading, user } = useApp();
   const navigate = useNavigate();
 
-  // Handle automatic redirect if already authenticated and profile is loaded
+  // Redirect logic: only redirect when auth is complete and profile is fetched
   useEffect(() => {
     if (isAuth && !isLoading && user) {
       const destination = user.role === 'admin' ? '/admin' : '/dashboard';
@@ -71,27 +71,17 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   };
 
   const handleResend = async () => {
-    if (!email) {
-      alert("Please enter your email address first.");
-      return;
-    }
+    if (!email) return;
     setLoading(true);
     await resendVerification(email);
     setLoading(false);
   };
 
-  const getTitle = () => {
-    if (view === 'login') return 'Welcome Back';
-    return 'Create Account';
-  };
+  const getTitle = () => (view === 'login' ? 'Welcome Back' : 'Create Account');
+  const getSubtitle = () => (view === 'login' ? 'Sign in to access your assets.' : 'Join our premium marketplace.');
 
-  const getSubtitle = () => {
-    if (view === 'login') return 'Log in to your secure workspace.';
-    return 'Access the professional marketplace.';
-  };
-
-  // If user is authenticated but profile is loading, show dots.
-  // Otherwise, show the auth forms if not authenticated.
+  // Refined visibility: Don't block the page if user is NOT authenticated.
+  // Only show the global loader if we ARE authenticated but still waiting on profile data.
   if (isLoading && isAuth) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <LoadingDots />
@@ -99,11 +89,11 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   );
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 animate-fadeIn">
       <div className="w-full max-w-md">
-        <div className="text-center mb-10 animate-fadeIn">
+        <div className="text-center mb-10">
           <Link to="/" className="inline-block mb-6">
-            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[220px] h-auto mx-auto" />
+            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[200px] h-auto mx-auto" />
           </Link>
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{getTitle()}</h2>
           <p className="text-slate-500 mt-2 font-medium">{getSubtitle()}</p>
@@ -125,24 +115,20 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
+                {/* Simplified & Centered Security Message */}
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center text-center">
-                  <ShieldCheck className="w-5 h-5 text-slate-900 mb-2" />
-                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-tight max-w-[240px]">
-                    Verify email to access assets. No recovery without verification.
+                  <ShieldCheck className="w-6 h-6 text-slate-900 mb-2" />
+                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-tight max-w-[220px]">
+                    Verify your email to keep your account safe. No verification means no access.
                   </p>
                 </div>
                 
                 {smtpError && (
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex gap-3 items-start">
                     <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-[10px] sm:text-xs text-blue-900 font-bold leading-relaxed uppercase">
-                        Mail Server Latency
-                      </p>
-                      <p className="text-[9px] text-blue-700 mt-1 leading-normal uppercase">
-                        Please try again in 5 minutes or contact support if the issue persists.
-                      </p>
-                    </div>
+                    <p className="text-[9px] text-blue-700 leading-normal uppercase font-bold">
+                      Mail server busy. Try again in 5 minutes.
+                    </p>
                   </div>
                 )}
 
@@ -178,13 +164,11 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-80"
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-80 min-h-[56px]"
             >
-              {loading ? (
-                <LoadingDots color="text-white" />
-              ) : (
+              {loading ? <LoadingDots color="text-white" /> : (
                 <>
-                  {view === 'login' ? 'Authenticate' : 'Begin Deployment'}
+                  {view === 'login' ? 'Authenticate' : 'Register Now'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -198,7 +182,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
                 disabled={loading}
                 className="inline-flex items-center gap-2 text-[10px] font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-[0.2em] disabled:opacity-30"
               >
-                <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? <LoadingDots size="w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
                 Resend Verification
               </button>
             </div>
