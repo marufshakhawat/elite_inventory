@@ -1,8 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, CartItem, User, Order, AppSettings } from '../types';
-import { INITIAL_PRODUCTS } from '../utils/mockData';
-import { supabase } from '../utils/supabase';
+import { INITIAL_PRODUCTS } from '../utils/mockData.ts';
+import { supabase } from '../utils/supabase.ts';
 
 interface Toast {
   id: number;
@@ -252,11 +252,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const signInWithGoogle = async () => {
+    const siteUrl = window.location.origin;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Omitting the hash during the handshake often resolves callback parsing issues
-        redirectTo: window.location.origin, 
+        redirectTo: siteUrl, 
       },
     });
     if (error) {

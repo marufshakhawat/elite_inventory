@@ -1,3 +1,4 @@
+
 import { Product, User } from '../types';
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -118,19 +119,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_slots_enabled: true
   }
 ];
-
-export const DEMO_CREDENTIALS = {
-  admin: {
-    email: 'admin@elite.com',
-    password: 'password123',
-    role: 'admin'
-  },
-  user: {
-    email: 'user@elite.com',
-    password: 'password123',
-    role: 'user'
-  }
-};
 
 export const DUMMY_USER: User = {
   id: 'u1',
