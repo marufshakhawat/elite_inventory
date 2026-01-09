@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, AlertTriangle, RefreshCw, Info, Timer, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, AlertTriangle, RefreshCw, Timer, ShieldCheck } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { LoadingDots } from '../App';
 
@@ -25,7 +25,6 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
   const { login, signup, resendVerification, isAuth, isLoading, user } = useApp();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuth && !isLoading && user) {
       const destination = user.role === 'admin' ? '/admin' : '/dashboard';
@@ -48,7 +47,6 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     if (view === 'login') {
       const success = await login(email, password);
       if (!success) {
-        // If login fails, offer resend in case it was a verification issue
         setShowResend(true);
         setLoading(false);
       }
@@ -84,10 +82,9 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
     setLoading(false);
   };
 
-  const getTitle = () => (view === 'login' ? 'Welcome Back' : 'Create Account');
-  const getSubtitle = () => (view === 'login' ? 'Log in to access your secure inventory.' : 'Join the elite marketplace.');
+  const getTitle = () => (view === 'login' ? 'Login' : 'Sign Up');
+  const getSubtitle = () => (view === 'login' ? 'Enter your credentials to access your account.' : 'Create an account to start shopping.');
 
-  // Refined visibility logic
   if (isLoading && isAuth) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <LoadingDots />
@@ -99,7 +96,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <Link to="/" className="inline-block mb-6">
-            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[200px] h-auto mx-auto" />
+            <img src="https://lh3.googleusercontent.com/d/1WVWnBlpWY9YGtOO_c_03Nl0RJ_km-_W7" alt="Elite Inventory" className="w-[180px] h-auto mx-auto" />
           </Link>
           <h2 className="text-3xl font-semibold text-slate-900 tracking-tight">{getTitle()}</h2>
           <p className="text-slate-500 mt-2 font-medium">{getSubtitle()}</p>
@@ -109,7 +106,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           {isLinkExpired && (
              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3 items-start animate-fadeIn">
                 <Timer className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                <p className="text-[9px] text-rose-700 leading-normal uppercase font-semibold">
+                <p className="text-[10px] text-rose-700 leading-normal uppercase font-semibold">
                   Verification link expired. Request a new one below.
                 </p>
              </div>
@@ -118,11 +115,10 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {view === 'signup' && (
               <div className="space-y-4 animate-fadeIn">
-                {/* SMALL, CENTERED, SIMPLE SECURITY POLICY */}
                 <div className="flex flex-col items-center text-center px-4">
                   <ShieldCheck className="w-5 h-5 text-slate-900 mb-2" />
                   <p className="text-[10px] text-slate-500 font-semibold leading-relaxed uppercase tracking-tight max-w-[240px]">
-                    Verify your email to keep your account safe. No verification means no access.
+                    Verify your email to secure your purchases.
                   </p>
                 </div>
                 
@@ -158,14 +154,9 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all flex items-center justify-center group shadow-lg shadow-slate-100 disabled:opacity-80 min-h-[56px]"
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-semibold hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg shadow-slate-100 disabled:opacity-80 min-h-[56px] uppercase tracking-widest text-sm"
             >
-              {loading ? <LoadingDots color="text-white" /> : (
-                <>
-                  {view === 'login' ? 'Login' : 'Sign Up'}
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
+              {loading ? <LoadingDots color="text-white" /> : (view === 'login' ? 'Login' : 'Sign Up')}
             </button>
           </form>
 
@@ -173,7 +164,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             <div className="mt-6 text-center animate-fadeIn">
               <div className="p-3 bg-slate-50 rounded-xl mb-4">
                 <p className="text-[9px] text-slate-500 font-semibold uppercase tracking-widest leading-relaxed">
-                  {smtpStatus === 'sent' ? 'Verification Sent! Check your Inbox & Spam folders.' : 'Missing verification?'}
+                  {smtpStatus === 'sent' ? 'Verification Sent!' : 'Missing verification?'}
                 </p>
               </div>
               <button 
@@ -189,7 +180,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
         </div>
 
         <p className="text-center mt-8 text-slate-500 text-sm font-medium">
-          {view === 'login' ? "New operative?" : "Already verified?"}{' '}
+          {view === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
           <button 
             onClick={() => {
               setView(view === 'login' ? 'signup' : 'login');
@@ -198,7 +189,7 @@ const Auth: React.FC<AuthProps> = ({ defaultView = 'login' }) => {
             }} 
             className="font-semibold text-slate-900 hover:underline tracking-tight"
           >
-            {view === 'login' ? 'Create Account' : 'Sign In'}
+            {view === 'login' ? 'Register Now' : 'Login Now'}
           </button>
         </p>
       </div>
