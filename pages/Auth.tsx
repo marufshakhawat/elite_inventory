@@ -34,7 +34,6 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
     } else {
       const success = await signup(email, password, name);
       // If signup is successful, AppContext handles the toast.
-      // If user exists, AppContext handles the redirect to ?registered=true
     }
     setLoading(false);
   };
@@ -65,8 +64,14 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
               <div className="relative animate-fadeIn">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <input 
-                  type="text" placeholder="Full Name" required
-                  value={name} onChange={e => setName(e.target.value)}
+                  id="full-name"
+                  name="name"
+                  type="text" 
+                  placeholder="Full Name" 
+                  required
+                  autoComplete="name"
+                  value={name} 
+                  onChange={e => setName(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-medium"
                 />
               </div>
@@ -75,8 +80,14 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
               <input 
-                type="email" placeholder="Email Address" required
-                value={email} onChange={e => setEmail(e.target.value)}
+                id="email-address"
+                name="email"
+                type="email" 
+                placeholder="Email Address" 
+                required
+                autoComplete="username"
+                value={email} 
+                onChange={e => setEmail(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-medium"
               />
             </div>
@@ -84,8 +95,14 @@ const Auth: React.FC<{ defaultView?: AuthView }> = ({ defaultView = 'login' }) =
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
               <input 
-                type="password" placeholder="Password" required
-                value={password} onChange={e => setPassword(e.target.value)}
+                id="password"
+                name="password"
+                type="password" 
+                placeholder="Password" 
+                required
+                autoComplete={view === 'login' ? 'current-password' : 'new-password'}
+                value={password} 
+                onChange={e => setPassword(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-slate-900 transition-all text-sm font-medium"
               />
             </div>
