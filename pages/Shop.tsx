@@ -1,30 +1,33 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { Filter, LayoutGrid, Search, X, CircleDollarSign } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import ProductCard from '../components/ProductCard';
+import { slugify } from '../utils/mockData.ts';
 
 const Shop: React.FC = () => {
   const { products } = useApp();
+  const { categorySlug } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const initialCategory = searchParams.get('category') || 'All';
 
-  const [category, setCategory] = useState(initialCategory);
+  const categories = useMemo(() => ['All', ...new Set(products.map(p => p.category))], [products]);
+  
+  // Find current category from slug
+  const currentCategory = useMemo(() => {
+    if (!categorySlug) return 'All';
+    return categories.find(c => slugify(c) === categorySlug) || 'All';
+  }, [categorySlug, categories]);
+
   const [sort, setSort] = useState('newest');
   const [maxPrice, setMaxPrice] = useState(10000);
-
-  // Sync state with URL changes (for navigation drawer clicks)
-  useEffect(() => {
-    setCategory(searchParams.get('category') || 'All');
-  }, [searchParams]);
-
-  const categories = ['All', ...new Set(products.map(p => p.category))];
 
   const filteredProducts = useMemo(() => {
     return products
       .filter(p => {
-        const matchesCategory = category === 'All' || p.category === category;
+        const matchesCategory = currentCategory === 'All' || p.category === currentCategory;
         const matchesSearch = p.name.toLowerCase().includes(query.toLowerCase()) || 
                              p.description.toLowerCase().includes(query.toLowerCase());
         const matchesPrice = p.price <= maxPrice;
@@ -36,13 +39,21 @@ const Shop: React.FC = () => {
         if (sort === 'topRated') return b.rating - a.rating;
         return 0; // default newest
       });
-  }, [products, category, query, sort, maxPrice]);
+  }, [products, currentCategory, query, sort, maxPrice]);
+
+  const handleCategoryChange = (cat: string) => {
+    if (cat === 'All') {
+      navigate('/shop');
+    } else {
+      navigate(`/category/${slugify(cat)}`);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="mb-12">
         <h1 className="text-4xl font-black text-slate-900 mb-2 tracking-tight">
-          {category === 'All' ? 'ELITE MARKETPLACE' : category.toUpperCase()}
+          {currentCategory === 'All' ? 'ELITE MARKETPLACE' : currentCategory.toUpperCase()}
         </h1>
         <p className="text-slate-500 font-medium">Curated premium digital resources for power users.</p>
       </div>
@@ -63,9 +74,9 @@ const Shop: React.FC = () => {
                   {categories.map(cat => (
                     <button
                       key={cat}
-                      onClick={() => setCategory(cat)}
+                      onClick={() => handleCategoryChange(cat)}
                       className={`block w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                        category === cat ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
+                        currentCategory === cat ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
                       }`}
                     >
                       {cat}
@@ -99,7 +110,7 @@ const Shop: React.FC = () => {
               </div>
 
               <button 
-                onClick={() => { setCategory('All'); setMaxPrice(10000); setSort('newest'); }}
+                onClick={() => { handleCategoryChange('All'); setMaxPrice(10000); setSort('newest'); }}
                 className="w-full py-4 border border-slate-100 text-slate-400 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all"
               >
                 Reset Selection
@@ -144,7 +155,7 @@ const Shop: React.FC = () => {
               <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Zero Matches</h3>
               <p className="text-slate-400 mt-2 font-medium">Your filter parameters returned no active inventory.</p>
               <button 
-                onClick={() => { setCategory('All'); setMaxPrice(10000); }}
+                onClick={() => { handleCategoryChange('All'); setMaxPrice(10000); }}
                 className="mt-8 bg-slate-900 text-white px-10 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 shadow-xl transition-all"
               >
                 Clear Restrictions

@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { Product, Order, User } from '../types';
+// Import slugify from utils/mockData.ts
+import { slugify } from '../utils/mockData.ts';
 
 type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'settings';
 
@@ -57,9 +59,12 @@ const Admin: React.FC = () => {
   const handleSaveProduct = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    // Fix: Added missing 'slug' property to the Product object to satisfy interface requirements
     const product: Product = {
       id: editingProduct?.id || `ELT-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-      name: formData.get('name') as string,
+      slug: editingProduct?.slug || slugify(name),
+      name: name,
       price: parseFloat(formData.get('price') as string),
       category: formData.get('category') as string,
       image: formData.get('image') as string || 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600',

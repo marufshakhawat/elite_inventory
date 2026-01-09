@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext.tsx';
 import { CheckCircle, Info, X, ChevronUp, Loader2 } from 'lucide-react';
 import Navbar from './components/Navbar.tsx';
@@ -106,7 +106,8 @@ const AppContent: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/category/:categorySlug" element={<Shop />} />
+          <Route path="/product/:productSlug" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/login" element={<Auth />} />

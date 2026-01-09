@@ -7,6 +7,7 @@ import {
   Feather, Lock, AppWindow, PieChart, Monitor, Gamepad2, Tv, Gift 
 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { slugify } from '../utils/mockData.ts';
 
 const Navbar: React.FC = () => {
   const { cart, user, isAuth, logout } = useApp();
@@ -18,17 +19,17 @@ const Navbar: React.FC = () => {
   const menuItems = [
     { label: 'Home', path: '/', icon: HomeIcon },
     { label: 'All Products', path: '/shop', icon: LayoutGrid },
-    { label: 'Writing Tools', path: '/shop?category=Writing Tools', icon: PenTool },
-    { label: 'Educational Tools', path: '/shop?category=Educational Tools', icon: GraduationCap },
-    { label: 'Graphics Tools', path: '/shop?category=Graphics Tools', icon: Layers },
-    { label: 'Graphics Resources', path: '/shop?category=Graphics Resources', icon: Feather },
-    { label: 'Premium VPN', path: '/shop?category=Premium VPN', icon: Lock },
-    { label: 'Software & Apps', path: '/shop?category=Software & Apps', icon: AppWindow },
-    { label: 'Marketing Tools', path: '/shop?category=Marketing Tools', icon: PieChart },
-    { label: 'Web Elements', path: '/shop?category=Web Elements', icon: Monitor },
-    { label: 'Gaming', path: '/shop?category=Gaming', icon: Gamepad2 },
-    { label: 'Streaming Platform', path: '/shop?category=Streaming Platform', icon: Tv },
-    { label: 'Gift Card', path: '/shop?category=Gift Card', icon: Gift },
+    { label: 'Writing Tools', path: '/category/writing-tools', icon: PenTool },
+    { label: 'Educational Tools', path: '/category/educational-tools', icon: GraduationCap },
+    { label: 'Graphics Tools', path: '/category/graphics-tools', icon: Layers },
+    { label: 'Graphics Resources', path: '/category/graphics-resources', icon: Feather },
+    { label: 'Premium VPN', path: '/category/premium-vpn', icon: Lock },
+    { label: 'Software & Apps', path: '/category/software-apps', icon: AppWindow },
+    { label: 'Marketing Tools', path: '/category/marketing-tools', icon: PieChart },
+    { label: 'Web Elements', path: '/category/web-elements', icon: Monitor },
+    { label: 'Gaming', path: '/category/gaming', icon: Gamepad2 },
+    { label: 'Streaming Platform', path: '/category/streaming-platform', icon: Tv },
+    { label: 'Gift Card', path: '/category/gift-card', icon: Gift },
   ];
 
   const handleNavClick = (path: string) => {

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Star, Zap, Shield, RotateCcw, Minus, Plus, ShoppingBag, Heart, Mail, Info, Layers, Clock, Users, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -5,7 +6,7 @@ import { useApp } from '../store/AppContext';
 import ProductCard from '../components/ProductCard';
 
 const ProductDetail: React.FC = () => {
-  const { id } = useParams();
+  const { productSlug } = useParams();
   const navigate = useNavigate();
   const { products, addToCart, wishlist, toggleWishlist, isAuth } = useApp();
   const [quantity, setQuantity] = useState(1);
@@ -16,8 +17,8 @@ const ProductDetail: React.FC = () => {
   const [duration, setDuration] = useState<'1 Month' | '6 Months' | '1 Year'>('1 Month');
   const [slots, setSlots] = useState<'1 Profile' | '2 Profiles' | '5 Profiles'>('1 Profile');
 
-  const product = products.find(p => p.id === id);
-  const relatedProducts = products.filter(p => p.category === product?.category && p.id !== id).slice(0, 4);
+  const product = products.find(p => p.slug === productSlug);
+  const relatedProducts = products.filter(p => p.category === product?.category && p.id !== product?.id).slice(0, 4);
 
   if (!product) return (
     <div className="max-w-7xl mx-auto px-4 py-20 text-center">

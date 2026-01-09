@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-slate-100 transition-all hover:shadow-2xl hover:shadow-slate-500/10 product-card flex flex-col h-full">
-      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-slate-100 shimmer flex-shrink-0">
+      <Link to={`/product/${product.slug}`} className="block relative aspect-square overflow-hidden bg-slate-100 shimmer flex-shrink-0">
         <img
           src={product.image}
           alt={product.name}
@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         </div>
         
-        <Link to={`/product/${product.id}`} className="flex-1">
+        <Link to={`/product/${product.slug}`} className="flex-1">
           <h3 className="text-slate-900 font-bold text-base mb-4 group-hover:text-slate-600 transition-colors line-clamp-2 min-h-[3rem] leading-tight">
             {product.name}
           </h3>

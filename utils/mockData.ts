@@ -1,10 +1,22 @@
 
 import { Product, User } from '../types';
 
+export const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
 export const INITIAL_PRODUCTS: Product[] = [
-  // Writing Tools
   {
     id: 'w1',
+    slug: 'chatgpt-plus-subscription-shared',
     name: 'ChatGPT Plus Subscription (Shared)',
     price: 750,
     description: 'Get access to GPT-4, DALL-E, and faster response times. 1 month shared account access.',
@@ -19,6 +31,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 'w2',
+    slug: 'grammarly-premium-shared',
     name: 'Grammarly Premium (Shared)',
     price: 450,
     description: '1 month access to Grammarly Premium. Improve your writing and grammar instantly.',
@@ -32,6 +45,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 'w3',
+    slug: 'quillbot-premium-1-month',
     name: 'Quillbot Premium (1 Month)',
     price: 400,
     description: 'Paraphrasing tool that helps you write better, faster, and clearer.',
@@ -43,10 +57,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_duration_enabled: true,
     is_slots_enabled: false
   },
-
-  // Educational Tools
   {
     id: 'e1',
+    slug: 'skillshare-premium-3-months',
     name: 'Skillshare Premium (3 Months)',
     price: 1800,
     description: 'Learn anything with unlimited access to thousands of creative classes.',
@@ -60,6 +73,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 'e2',
+    slug: 'linkedin-learning-premium',
     name: 'LinkedIn Learning Premium',
     price: 1200,
     description: 'Access to 16,000+ expert-led courses. Enhance your professional skills.',
@@ -71,10 +85,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_duration_enabled: true,
     is_slots_enabled: false
   },
-
-  // Graphics Tools
   {
     id: 'g1',
+    slug: 'canva-pro-lifetime-access',
     name: 'Canva Pro - Lifetime Access',
     price: 1200,
     description: 'Join our premium team for lifetime access to all Canva Pro features and templates.',
@@ -87,10 +100,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_duration_enabled: false,
     is_slots_enabled: false
   },
-
-  // Premium VPN
   {
     id: 'v1',
+    slug: 'nordvpn-1-year-premium',
     name: 'NordVPN 1 Year Premium',
     price: 2400,
     description: 'Ultra-fast VPN with military-grade encryption. Access content globally with ease.',
@@ -103,10 +115,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     is_duration_enabled: true,
     is_slots_enabled: false
   },
-
-  // Streaming Platform
   {
     id: 'st1',
+    slug: 'netflix-premium-4k-shared-profile',
     name: 'Netflix Premium 4K (Shared Profile)',
     price: 600,
     description: '1 month access to 1 private profile on a shared Netflix Premium account.',

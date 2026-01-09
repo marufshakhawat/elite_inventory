@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, CartItem, User, Order, AppSettings } from '../types';
-import { INITIAL_PRODUCTS } from '../utils/mockData.ts';
+import { INITIAL_PRODUCTS, slugify } from '../utils/mockData.ts';
 import { supabase } from '../utils/supabase.ts';
 
 interface Toast {
@@ -316,21 +316,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addProduct = async (product: Product) => {
-    const { error } = await supabase.from('products').insert([product]);
+    const productWithSlug = { ...product, slug: product.slug || slugify(product.name) };
+    const { error } = await supabase.from('products').insert([productWithSlug]);
     if (error) {
       addToast(error.message, 'error');
     } else {
-      setProducts(prev => [product, ...prev]);
+      setProducts(prev => [productWithSlug, ...prev]);
       addToast('Asset added to inventory');
     }
   };
 
   const updateProduct = async (product: Product) => {
-    const { error } = await supabase.from('products').update(product).eq('id', product.id);
+    const productWithSlug = { ...product, slug: slugify(product.name) };
+    const { error } = await supabase.from('products').update(productWithSlug).eq('id', product.id);
     if (error) {
       addToast(error.message, 'error');
     } else {
-      setProducts(prev => prev.map(p => p.id === product.id ? product : p));
+      setProducts(prev => prev.map(p => p.id === product.id ? productWithSlug : p));
       addToast('Inventory updated');
     }
   };

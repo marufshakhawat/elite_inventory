@@ -1,6 +1,7 @@
 
 export interface Product {
   id: string;
+  slug: string; // SEO-friendly URL part
   name: string;
   price: number;
   description: string;
