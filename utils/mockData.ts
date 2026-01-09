@@ -41,6 +41,18 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.7,
     is_shared_personal_enabled: true
   },
+  {
+    id: 'w3',
+    slug: 'quillbot-premium-1-year',
+    name: 'QuillBot Premium (1 Year)',
+    price: 1250,
+    description: 'The ultimate paraphrasing tool. Unlock all modes, unlimited words, and plagiarism checker.',
+    category: 'Writing Tools',
+    image: 'https://images.unsplash.com/photo-1516414447565-b14be0adf13e?auto=format&fit=crop&q=80&w=600',
+    stock: 25,
+    rating: 4.8,
+    is_duration_enabled: true
+  },
   // Educational Tools
   {
     id: 'e1',
@@ -64,6 +76,18 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=600',
     stock: 15,
     rating: 4.8
+  },
+  {
+    id: 'e3',
+    slug: 'linkedin-learning-lifetime',
+    name: 'LinkedIn Learning Premium',
+    price: 3500,
+    description: 'Access thousands of professional courses. Valid on your personal LinkedIn account.',
+    category: 'Educational Tools',
+    image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?auto=format&fit=crop&q=80&w=600',
+    stock: 5,
+    rating: 4.9,
+    featured: true
   },
   // Graphics Tools
   {
@@ -102,6 +126,18 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 45,
     rating: 4.6
   },
+  {
+    id: 'gr2',
+    slug: 'envato-elements-30-days',
+    name: 'Envato Elements (30 Days)',
+    price: 850,
+    description: 'Unlimited downloads of creative assets, templates, and premium fonts.',
+    category: 'Graphics Resources',
+    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=600',
+    stock: 30,
+    rating: 4.9,
+    featured: true
+  },
   // Premium VPN
   {
     id: 'v1',
@@ -127,6 +163,17 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 25,
     rating: 4.7
   },
+  {
+    id: 'v3',
+    slug: 'expressvpn-premium-private',
+    name: 'ExpressVPN Premium (Private)',
+    price: 2800,
+    description: 'High-speed VPN for streaming and gaming. Private account login.',
+    category: 'Premium VPN',
+    image: 'https://images.unsplash.com/photo-1633265485501-49509432659e?auto=format&fit=crop&q=80&w=600',
+    stock: 10,
+    rating: 4.9
+  },
   // Software & Apps
   {
     id: 'cc1',
@@ -151,6 +198,17 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 15,
     rating: 4.9
   },
+  {
+    id: 'sa1',
+    slug: 'microsoft-365-family-1-year',
+    name: 'Microsoft 365 Family (1 Year Slot)',
+    price: 950,
+    description: 'Word, Excel, PowerPoint, and 1TB OneDrive cloud storage. Genuine invitation.',
+    category: 'Software & Apps',
+    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600',
+    stock: 50,
+    rating: 4.8
+  },
   // Gaming
   {
     id: 'gm1',
@@ -173,6 +231,18 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&q=80&w=600',
     stock: 100,
     rating: 4.9
+  },
+  {
+    id: 'gm3',
+    slug: 'xbox-game-pass-ultimate-1-month',
+    name: 'Xbox Game Pass Ultimate',
+    price: 1450,
+    description: 'Play hundreds of high-quality games on console, PC and cloud.',
+    category: 'Gaming',
+    image: 'https://images.unsplash.com/photo-1605902711622-cfb43c443ffb?auto=format&fit=crop&q=80&w=600',
+    stock: 20,
+    rating: 4.8,
+    is_duration_enabled: true
   },
   // Streaming Platform
   {
@@ -211,6 +281,17 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4.8,
     is_slots_enabled: true
   },
+  {
+    id: 'st2',
+    slug: 'disney-plus-premium-shared',
+    name: 'Disney+ Premium (Shared)',
+    price: 450,
+    description: 'Stream Marvel, Pixar, Star Wars, and Disney classics in 4K UHD.',
+    category: 'Streaming Platform',
+    image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?auto=format&fit=crop&q=80&w=600',
+    stock: 15,
+    rating: 4.7
+  },
   // Gift Card
   {
     id: 'gc1',
@@ -222,5 +303,16 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600',
     stock: 200,
     rating: 5.0
+  },
+  {
+    id: 'gc2',
+    slug: 'apple-gift-card-10-usd',
+    name: 'Apple Gift Card 10 USD (US)',
+    price: 1350,
+    description: 'Valid for US App Store, iTunes, and iCloud subscriptions.',
+    category: 'Gift Card',
+    image: 'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&q=80&w=600',
+    stock: 40,
+    rating: 4.9
   }
 ];
